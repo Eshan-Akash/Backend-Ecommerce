@@ -5,17 +5,17 @@ This project is a comprehensive eCommerce platform developed as part of a master
 
 ## Key Features
 
-### 1. ProductInventoryService
+### 1. ProductService
 - **Product Catalog**: Manages products, categories, descriptions, images, and specifications.
 - **Inventory Management**: Tracks stock levels, manages restocking, and provides low-stock alerts.
 - **Supplier Integration**: Automates the restocking process by managing supplier relationships.
 
-### 2. UserInteractionService
+### 2. UserService
 - **User Management**: Handles user registration, login, profile management, and secure password resets.
 - **Reviews and Ratings**: Allows users to leave reviews and ratings on products, with moderation features.
 - **Security**: Implements role-based access control, two-factor authentication, and social media logins.
 
-### 3. CommerceService
+### 3. OrderService
 - **Cart Management**: Enables users to add, update, and remove items from their shopping cart, including applying discounts and promo codes.
 - **Checkout**: Facilitates a seamless checkout process, including payment processing and order creation.
 - **Order Management**: Provides order confirmation, tracking, and history management.
