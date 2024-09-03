@@ -14,6 +14,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="ecomm" target="17" />
       <module name="New Folder" target="17" />
       <module name="repyute" target="17" />
     </bytecodeTargetLevel>
