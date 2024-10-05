@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fad061b5-b12d-420c-a5ef-cfeb6ed6d3a8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/index.pb" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/index.pb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/emailservice/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/emailservice/src/main/resources/application.properties" afterDir="false" />
-    </list>
+    <list default="true" id="fad061b5-b12d-420c-a5ef-cfeb6ed6d3a8" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -17,12 +13,16 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JpbToolWindowState">
+    <option name="isToolWindowVisible" value="false" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -42,8 +42,9 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "develop",
-    "last_opened_file_path": "/Users/eshan_akash/Desktop/Project Eshan/Ecommerce/userservice/src/main/java/dev/eshan/userservice",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "dev/eshan/product-service-implementation",
+    "last_opened_file_path": "/Users/eshan_akash/Desktop/Project Eshan/Ecommerce/productservice/src/main/java/dev/eshan/productservice",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
@@ -52,10 +53,20 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice" />
+      <recent name="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/events" />
+      <recent name="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/services/impl" />
+      <recent name="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/controllers" />
+      <recent name="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/repositories" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="dev.eshan.productservice.eventlisteners" />
+      <recent name="dev.eshan.productservice.dtos" />
+      <recent name="dev.eshan.productservice.services.interfaces" />
+      <recent name="dev.eshan.productservice.exceptions" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.EmailserviceApplication">
+  <component name="RunManager" selected="Application.ProductserviceApplication">
     <configuration name="EmailserviceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="dev.eshan.emailservice.EmailserviceApplication" />
       <module name="emailservice" />
@@ -110,10 +121,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.ProductserviceApplication" />
         <item itemvalue="Application.EmailserviceApplication" />
         <item itemvalue="Application.OrderserviceApplication" />
         <item itemvalue="Application.UserserviceApplication" />
-        <item itemvalue="Application.ProductserviceApplication" />
       </list>
     </recent_temporary>
   </component>

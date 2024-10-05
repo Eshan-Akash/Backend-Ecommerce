@@ -1,0 +1,30 @@
+package dev.eshan.productservice.events;
+
+public enum EventName {
+    // Product Catalog Events
+    PRODUCT_CREATED,
+    PRODUCT_UPDATED,
+    PRODUCT_DELETED,
+    CATEGORY_CREATED,
+    CATEGORY_UPDATED,
+    CATEGORY_DELETED,
+
+    // Inventory Management Events
+    PRODUCT_STOCK_DECREASED,
+    PRODUCT_STOCK_INCREASED,
+    LOW_STOCK_ALERT,
+    PRODUCT_OUT_OF_STOCK,
+    PRODUCT_RESTOCKED,
+
+    // Supplier Integration Events
+    SUPPLIER_RESTOCK_REQUEST,
+    SUPPLIER_CREATED,
+    SUPPLIER_UPDATED,
+    SUPPLIER_DELETED,
+    SUPPLIER_RESTOCK_CONFIRMED,
+
+    // Notification Events
+    ADMIN_NOTIFICATION,
+    SUPPLIER_NOTIFICATION,
+    CUSTOMER_RESTOCK_NOTIFICATION
+}
