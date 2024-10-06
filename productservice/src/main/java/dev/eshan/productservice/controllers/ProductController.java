@@ -35,7 +35,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public GenericProductDto createProduct(@RequestBody GenericProductDto product) {
+    public GenericProductDto createProduct(@RequestBody GenericProductDto product) throws NotFoundException {
         // 1. Create a new product
         // 2. PRODUCT_CREATED event is published
         return productService.createProduct(product);

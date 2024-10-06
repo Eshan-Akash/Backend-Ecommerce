@@ -1,0 +1,20 @@
+
+L
+java:S1948"*Make "category" transient or serializable.(ëÚÔíøÿÿÿÿ8Å”ã¥2
+D
+java:S1948"'Make "price" transient or serializable.(ÏıÂ…8Å”ã¥2
+G
+java:S1948"*Make "supplier" transient or serializable.(æëµİ8Ôò»ç¥2
+g
+java:S1128"ERemove this unused import 'dev.eshan.productservice.models.Category'.(‰Ö¹áşÿÿÿÿ8×ò»ç¥2
+a
+java:S1128"ERemove this unused import 'dev.eshan.productservice.models.Supplier'.(îÖš8×ò»ç¥2
+^
+java:S1128"<Remove this unused import 'jakarta.persistence.CascadeType'.(ÃÃÊŠúÿÿÿÿ8×ò»ç¥2
+\
+java:S1128":Remove this unused import 'jakarta.persistence.ManyToOne'.(áîÖãùÿÿÿÿ8×ò»ç¥2
+[
+java:S1128	"9Remove this unused import 'jakarta.persistence.OneToOne'.(Ç­É™üÿÿÿÿ8×ò»ç¥2
+a
+java:S1128
+"DRemove this unused import 'jakarta.validation.constraints.NotEmpty'.(µÇî±8²ºËç¥2
