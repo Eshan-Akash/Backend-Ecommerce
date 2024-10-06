@@ -170,11 +170,21 @@ public class ProductServiceImpl implements ProductService {
             }
 
             Product existingProduct = existingProductOptional.get();
-            existingProduct.setTitle(genericProductDto.getTitle());
-            existingProduct.setDescription(genericProductDto.getDescription());
-            existingProduct.setSpecifications(genericProductDto.getSpecifications());
-            existingProduct.setImageUrl(genericProductDto.getImageUrl());
-            existingProduct.setPrice(genericProductDto.getPrice());
+            if (genericProductDto.getTitle() != null) {
+                existingProduct.setTitle(genericProductDto.getTitle());
+            }
+            if (genericProductDto.getDescription() != null) {
+                existingProduct.setDescription(genericProductDto.getDescription());
+            }
+            if (genericProductDto.getSpecifications() != null) {
+                existingProduct.setSpecifications(genericProductDto.getSpecifications());
+            }
+            if (genericProductDto.getImageUrl() != null) {
+                existingProduct.setImageUrl(genericProductDto.getImageUrl());
+            }
+            if (genericProductDto.getPrice() != null) {
+                existingProduct.setPrice(genericProductDto.getPrice());
+            }
 
             if (genericProductDto.getCategory() != null && genericProductDto.getCategory().getId() != null) {
                 Optional<Category> categoryOptional = categoryRepository.findById(genericProductDto.getCategory().getId());

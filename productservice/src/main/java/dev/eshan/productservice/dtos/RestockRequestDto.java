@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RestockRequestDto {
-    Supplier supplier;       // The supplier to notify
-    Product product;         // The product that needs restocking
-    int restockAmount;       // Amount to restock
+    String supplierId;
+    String productId;
+    int restockAmount;
 }
