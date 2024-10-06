@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fad061b5-b12d-420c-a5ef-cfeb6ed6d3a8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/repositories/ProductRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/repositories/ProductRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/services/impl/ProductServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/services/impl/ProductServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

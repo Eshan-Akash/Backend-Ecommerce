@@ -16,7 +16,9 @@ import dev.eshan.productservice.services.interfaces.ProductService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +43,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<GenericProductDto> getProducts() {
-        Optional<List<Product>> products = Optional.of(productRepository.findAll());
-        List<GenericProductDto> genericProductDtos = new ArrayList<>();
-        if (products.isPresent()) {
+        try {
+            Optional<List<Product>> products = Optional.of(productRepository.findAll());
+            List<GenericProductDto> genericProductDtos = new ArrayList<>();
             for (Product product : products.get()) {
                 GenericProductDto genericProductDto = new GenericProductDto();
                 genericProductDto.setId(product.getId());
@@ -58,8 +60,11 @@ public class ProductServiceImpl implements ProductService {
                         .name(product.getCategory().getName())
                         .build());
             }
+            return genericProductDtos;
+        } catch (Exception e) {
+            log.error("Error occurred while fetching products", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred while fetching products");
         }
-        return genericProductDtos;
     }
 
     @Override
@@ -69,70 +74,78 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     public GenericProductDto getProductFromStoreById(String id) throws NotFoundException {
-        Optional<Product> productOptional = productRepository.findById(id);
-        Product product = productOptional.orElseThrow(() -> new NotFoundException("Product not found by id: " + id));
+        try {
+            Optional<Product> productOptional = productRepository.findById(id);
+            Product product = productOptional.orElseThrow(() -> new NotFoundException("Product not found by id: " + id));
 
-        GenericProductDto genericProductDto = new GenericProductDto();
-        genericProductDto.setId(product.getId());
-        genericProductDto.setTitle(product.getTitle());
-        genericProductDto.setDescription(product.getDescription());
-        genericProductDto.setSpecifications(product.getSpecifications());
-        genericProductDto.setImageUrl(product.getImageUrl());
-        genericProductDto.setPrice(product.getPrice());
+            GenericProductDto genericProductDto = new GenericProductDto();
+            genericProductDto.setId(product.getId());
+            genericProductDto.setTitle(product.getTitle());
+            genericProductDto.setDescription(product.getDescription());
+            genericProductDto.setSpecifications(product.getSpecifications());
+            genericProductDto.setImageUrl(product.getImageUrl());
+            genericProductDto.setPrice(product.getPrice());
 
-        Optional<Category> category = categoryRepository.findById(product.getCategory().getId());
-        if (category.isPresent()) {
-            // don't set products here to avoid infinite recursion // Since the List of products are fetched lazily by default in JPA repositories
-            genericProductDto.setCategory(GenericCategoryDto.builder()
-                    .id(category.get().getId())
-                    .name(category.get().getName())
-                    .build());
+            Optional<Category> category = categoryRepository.findById(product.getCategory().getId());
+            if (category.isPresent()) {
+                // don't set products here to avoid infinite recursion
+                // Since the List of products are fetched lazily by default in JPA repositories
+                genericProductDto.setCategory(GenericCategoryDto.builder()
+                        .id(category.get().getId())
+                        .name(category.get().getName())
+                        .build());
+            }
+            return genericProductDto;
+        } catch (NotFoundException e) {
+            log.error("Product not found by id: " + id, e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            log.error("Error occurred while fetching product by id: " + id, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred while fetching product by id: " + id);
         }
-        return genericProductDto;
     }
 
     @Override
     public GenericProductDto createProduct(GenericProductDto genericProductDto) throws NotFoundException {
-        Product product = new Product();
-        product.setTitle(genericProductDto.getTitle());
-        product.setDescription(genericProductDto.getDescription());
-        product.setSpecifications(genericProductDto.getSpecifications());
-        product.setImageUrl(genericProductDto.getImageUrl());
-        product.setPrice(genericProductDto.getPrice());
+        try {
+            if (genericProductDto == null) {
+                throw new NotFoundException("Product details not provided");
+            }
+            if (genericProductDto.getCategory() == null || genericProductDto.getCategory().getId() == null) {
+                throw new NotFoundException("Category not provided");
+            }
+            if (genericProductDto.getSupplier() == null || genericProductDto.getSupplier().getId() == null) {
+                throw new NotFoundException("Supplier not provided");
+            }
+            Product product = new Product();
+            product.setTitle(genericProductDto.getTitle());
+            product.setDescription(genericProductDto.getDescription());
+            product.setSpecifications(genericProductDto.getSpecifications());
+            product.setImageUrl(genericProductDto.getImageUrl());
+            product.setPrice(genericProductDto.getPrice());
 
-        // Handle category
-        Category category = null;
-        if (genericProductDto.getCategory() != null && genericProductDto.getCategory().getId() != null) {
-            category = categoryRepository.findById(genericProductDto.getCategory().getId())
+            Category category = categoryRepository.findById(genericProductDto.getCategory().getId())
                     .orElseThrow(() -> new NotFoundException("Category not found by id: " + genericProductDto.getCategory().getId()));
-        } else {
-            throw new NotFoundException("Category not found by id: " + genericProductDto.getCategory().getId());
-        }
-        product.setCategory(category);
+            product.setCategory(category);
 
-        // Handle supplier
-        Supplier supplier = null;
-        if (genericProductDto.getSupplier() != null && genericProductDto.getSupplier().getId() != null) {
-            // Assuming you have a SupplierRepository to find existing suppliers
-            supplier = supplierRepository.findById(genericProductDto.getSupplier().getId())
+            Supplier supplier = supplierRepository.findById(genericProductDto.getSupplier().getId())
                     .orElseThrow(() -> new NotFoundException("Supplier not found by id: " + genericProductDto.getSupplier().getId()));
-        } else {
-            throw new NotFoundException("Supplier not found by id: " + genericProductDto.getSupplier() != null ?
-                    genericProductDto.getSupplier().getId() : null);
+            product.setSupplier(supplier);
+
+            Product savedProduct = productRepository.save(product);
+            genericProductDto.setId(savedProduct.getId());
+            genericProductDto.getCategory().setId(savedProduct.getCategory().getId());
+            genericProductDto.getSupplier().setId(savedProduct.getSupplier().getId());
+
+            eventPublisher.publishEvent(getProductEvent(genericProductDto, EventName.PRODUCT_CREATED));
+            return genericProductDto;
+        } catch (NotFoundException e) {
+            log.error("Error occurred while creating product", e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            log.error("Error occurred while creating product", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred while creating product");
         }
-        product.setSupplier(supplier);
-
-        // Save the product
-        Product savedProduct = productRepository.save(product);
-
-        // Update the DTO with IDs
-        genericProductDto.setId(savedProduct.getId());
-        genericProductDto.getCategory().setId(savedProduct.getCategory().getId());
-        genericProductDto.getSupplier().setId(savedProduct.getSupplier().getId());
-
-        // Publish the product creation event
-        eventPublisher.publishEvent(getProductEvent(genericProductDto, EventName.PRODUCT_CREATED));
-        return genericProductDto;
     }
 
     private ProductEvent getProductEvent(GenericProductDto genericProductDto, EventName eventName) {
@@ -144,102 +157,64 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public GenericProductDto updateProduct(String id, GenericProductDto genericProductDto) throws NotFoundException {
-        Optional<Product> existingProductOptional = productRepository.findById(id);
-        if (existingProductOptional.isEmpty()) {
-            throw new NotFoundException("Product not found by id: " + id);
+        try {
+            Optional<Product> existingProductOptional = productRepository.findById(id);
+            if (existingProductOptional.isEmpty()) {
+                throw new NotFoundException("Product not found by id: " + id);
+            }
+
+            Product existingProduct = existingProductOptional.get();
+            existingProduct.setTitle(genericProductDto.getTitle());
+            existingProduct.setDescription(genericProductDto.getDescription());
+            existingProduct.setSpecifications(genericProductDto.getSpecifications());
+            existingProduct.setImageUrl(genericProductDto.getImageUrl());
+            existingProduct.setPrice(genericProductDto.getPrice());
+
+            if (genericProductDto.getCategory() != null && genericProductDto.getCategory().getId() != null) {
+                Optional<Category> categoryOptional = categoryRepository.findById(genericProductDto.getCategory().getId());
+                categoryOptional.ifPresent(existingProduct::setCategory);
+                categoryOptional.orElseThrow(() -> new NotFoundException("Category not found by id: " + genericProductDto.getCategory().getId()));
+            } else {
+                genericProductDto.setCategory(new GenericCategoryDto());
+            }
+
+            if (genericProductDto.getSupplier() != null) {
+                Optional<Supplier> supplier = supplierRepository.findById(genericProductDto.getSupplier().getId());
+                supplier.ifPresent(existingProduct::setSupplier);
+                supplier.orElseThrow(() -> new NotFoundException("Supplier not found by id: " + genericProductDto.getSupplier().getId()));
+            } else {
+                genericProductDto.setSupplier(new GenericSupplierDto());
+            }
+
+            Product savedProduct = productRepository.save(existingProduct);
+            genericProductDto.setId(savedProduct.getId());
+            genericProductDto.getCategory().setId(savedProduct.getCategory().getId());
+            genericProductDto.getSupplier().setId(savedProduct.getSupplier().getId());
+
+            eventPublisher.publishEvent(getProductEvent(genericProductDto, EventName.PRODUCT_UPDATED));
+            return genericProductDto;
+        } catch (NotFoundException e) {
+            log.error("Error occurred while updating product", e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            log.error("Error occurred while updating product", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred while updating product");
         }
-
-        Product existingProduct = existingProductOptional.get();
-
-        // Update product fields
-        existingProduct.setTitle(genericProductDto.getTitle());
-        existingProduct.setDescription(genericProductDto.getDescription());
-        existingProduct.setSpecifications(genericProductDto.getSpecifications());
-        existingProduct.setImageUrl(genericProductDto.getImageUrl());
-        existingProduct.setPrice(genericProductDto.getPrice());
-
-        // Handle category update
-        if (genericProductDto.getCategory() != null && genericProductDto.getCategory().getId() != null) {
-            Optional<Category> categoryOptional = categoryRepository.findById(genericProductDto.getCategory().getId());
-            categoryOptional.ifPresent(existingProduct::setCategory);
-            categoryOptional.orElseThrow(() -> new NotFoundException("Category not found by id: " + genericProductDto.getCategory().getId()));
-        } else {
-            genericProductDto.setCategory(new GenericCategoryDto());
-        }
-
-        // Handle supplier update
-        if (genericProductDto.getSupplier() != null) {
-            Optional<Supplier> supplier = supplierRepository.findById(genericProductDto.getSupplier().getId());
-            supplier.ifPresent(existingProduct::setSupplier);
-            supplier.orElseThrow(() -> new NotFoundException("Supplier not found by id: " + genericProductDto.getSupplier().getId()));
-        } else {
-            genericProductDto.setSupplier(new GenericSupplierDto());
-        }
-
-        // Save the updated product
-        Product savedProduct = productRepository.save(existingProduct);
-        genericProductDto.setId(savedProduct.getId());
-        genericProductDto.getCategory().setId(savedProduct.getCategory().getId());
-        genericProductDto.getSupplier().setId(savedProduct.getSupplier().getId());
-
-        // Publish the product update event
-        eventPublisher.publishEvent(getProductEvent(genericProductDto, EventName.PRODUCT_UPDATED));
-        return genericProductDto;
     }
 
     @Override
     public GenericProductDto deleteProduct(String id) throws NotFoundException {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Product not found by id: " + id));
+        try {
+            Product product = productRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Product not found by id: " + id));
 
-        // Remove product from all associated suppliers
-        if (product.getSupplier() != null && product.getSupplier().getProducts() != null) {
-            product.getSupplier().getProducts().remove(product);
-            supplierRepository.save(product.getSupplier());
-        }
+            // Remove product from all associated suppliers
+            if (product.getSupplier() != null && product.getSupplier().getProducts() != null) {
+                product.getSupplier().getProducts().remove(product);
+                supplierRepository.save(product.getSupplier());
+            }
+            productRepository.deleteById(id);
 
-        // Now delete the product safely
-        productRepository.deleteById(id);
-
-        // Build and return the response DTO
-        GenericProductDto genericProductDto = new GenericProductDto();
-        genericProductDto.setId(product.getId());
-        genericProductDto.setTitle(product.getTitle());
-        genericProductDto.setDescription(product.getDescription());
-        genericProductDto.setSpecifications(product.getSpecifications());
-        genericProductDto.setImageUrl(product.getImageUrl());
-        genericProductDto.setPrice(product.getPrice());
-
-        if (product.getCategory() != null) {
-            genericProductDto.setCategory(GenericCategoryDto.builder()
-                    .id(product.getCategory().getId())
-                    .name(product.getCategory().getName())
-                    .build());
-        }
-
-        if (product.getSupplier() != null) {
-            genericProductDto.setSupplier(GenericSupplierDto.builder()
-                    .id(product.getSupplier().getId())
-                    .name(product.getSupplier().getName())
-                    .build());
-        }
-
-        // Publish PRODUCT_DELETED event
-        eventPublisher.publishEvent(getProductEvent(genericProductDto, EventName.PRODUCT_DELETED));
-
-        // Return the deleted product details
-        return genericProductDto;
-    }
-
-    @Override
-    public List<GenericProductDto> getProductsInCategory(String categoryId) throws NotFoundException {
-        Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
-        if (categoryOptional.isEmpty()) {
-            throw new NotFoundException("Category not found by id: " + categoryId);
-        }
-        Category category = categoryOptional.get();
-        List<GenericProductDto> genericProductDtos = new ArrayList<>();
-        category.getProducts().forEach(product -> {
             GenericProductDto genericProductDto = new GenericProductDto();
             genericProductDto.setId(product.getId());
             genericProductDto.setTitle(product.getTitle());
@@ -247,31 +222,84 @@ public class ProductServiceImpl implements ProductService {
             genericProductDto.setSpecifications(product.getSpecifications());
             genericProductDto.setImageUrl(product.getImageUrl());
             genericProductDto.setPrice(product.getPrice());
-            genericProductDto.setCategory(GenericCategoryDto.builder()
-                    .id(product.getCategory().getId())
-                    .name(product.getCategory().getName())
-                    .build());
-            genericProductDto.setSupplier(GenericSupplierDto.builder()
-                    .id(product.getSupplier().getId())
-                    .name(product.getSupplier().getName())
-                    .build());
-            genericProductDtos.add(genericProductDto);
-        });
-        return genericProductDtos;
+
+            if (product.getCategory() != null) {
+                genericProductDto.setCategory(GenericCategoryDto.builder()
+                        .id(product.getCategory().getId())
+                        .name(product.getCategory().getName())
+                        .build());
+            }
+
+            if (product.getSupplier() != null) {
+                genericProductDto.setSupplier(GenericSupplierDto.builder()
+                        .id(product.getSupplier().getId())
+                        .name(product.getSupplier().getName())
+                        .build());
+            }
+
+            eventPublisher.publishEvent(getProductEvent(genericProductDto, EventName.PRODUCT_DELETED));
+            return genericProductDto;
+        } catch (NotFoundException e) {
+            log.error("Error occurred while deleting product", e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            log.error("Error occurred while deleting product", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred while deleting product");
+        }
+    }
+
+    @Override
+    public List<GenericProductDto> getProductsInCategory(String categoryId) throws NotFoundException {
+        try {
+            Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
+            if (categoryOptional.isEmpty()) {
+                throw new NotFoundException("Category not found by id: " + categoryId);
+            }
+            Category category = categoryOptional.get();
+            List<GenericProductDto> genericProductDtos = new ArrayList<>();
+            category.getProducts().forEach(product -> {
+                GenericProductDto genericProductDto = new GenericProductDto();
+                genericProductDto.setId(product.getId());
+                genericProductDto.setTitle(product.getTitle());
+                genericProductDto.setDescription(product.getDescription());
+                genericProductDto.setSpecifications(product.getSpecifications());
+                genericProductDto.setImageUrl(product.getImageUrl());
+                genericProductDto.setPrice(product.getPrice());
+                genericProductDto.setCategory(GenericCategoryDto.builder()
+                        .id(product.getCategory().getId())
+                        .name(product.getCategory().getName())
+                        .build());
+                genericProductDto.setSupplier(GenericSupplierDto.builder()
+                        .id(product.getSupplier().getId())
+                        .name(product.getSupplier().getName())
+                        .build());
+                genericProductDtos.add(genericProductDto);
+            });
+            return genericProductDtos;
+        } catch (NotFoundException e) {
+            log.error("Error occurred while fetching products in category", e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            log.error("Error occurred while fetching products in category", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred while fetching products in category");
+        }
     }
 
     @Override
     public List<String> getProductTitles(List<String> categoryIDs) {
-        List<Category> categories = categoryRepository.findAllById(categoryIDs);
+        try {
+            List<Category> categories = categoryRepository.findAllById(categoryIDs);
+            List<Product> products = productRepository.findAllByCategoryIn(categories);
+            List<String> titles = new ArrayList<>();
 
-        List<Product> products = productRepository.findAllByCategoryIn(categories);
+            for (Product p : products) {
+                titles.add(p.getTitle());
+            }
 
-        List<String> titles = new ArrayList<>();
-
-        for (Product p : products) {
-            titles.add(p.getTitle());
+            return titles;
+        } catch (Exception e) {
+            log.error("Error occurred while fetching product titles", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred while fetching product titles");
         }
-
-        return titles;
     }
 }
