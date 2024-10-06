@@ -19,7 +19,7 @@ public class CategoryServiceFactory {
     private ApplicationContext context;
 
     private static final Map<String, String> PUBLISHER_BEAN_NAME_MAPPING = Map.ofEntries(
-            entry("self", "productServiceImpl")
+            entry("self", "categoryServiceImpl")
     );
 
     public CategoryService create(String publisher) {

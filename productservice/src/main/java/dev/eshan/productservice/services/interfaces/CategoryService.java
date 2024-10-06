@@ -6,9 +6,8 @@ import dev.eshan.productservice.exceptions.NotFoundException;
 import java.util.List;
 
 public interface CategoryService {
-    GenericCategoryDto getCategory(String id) throws NotFoundException;
-
     List<GenericCategoryDto> getAllCategories();
+    GenericCategoryDto getCategory(String id) throws NotFoundException;
     GenericCategoryDto createCategory(GenericCategoryDto category);
     GenericCategoryDto updateCategory(String id, GenericCategoryDto category) throws NotFoundException;
     void deleteCategory(String id) throws NotFoundException;

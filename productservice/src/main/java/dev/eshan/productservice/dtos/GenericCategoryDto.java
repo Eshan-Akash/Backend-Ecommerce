@@ -1,5 +1,6 @@
 package dev.eshan.productservice.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -17,5 +18,6 @@ import java.util.List;
 public class GenericCategoryDto {
     private String id;
     private String name;
+    @JsonIgnore
     private List<GenericProductDto> products;
 }
