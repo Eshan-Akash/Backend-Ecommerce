@@ -21,6 +21,7 @@ public class Product extends BaseModel {
     Price price;
 
     Integer stockLevel;
+    Integer lowStockThreshold;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")  // Foreign key to Supplier

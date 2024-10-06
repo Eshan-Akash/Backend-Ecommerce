@@ -36,23 +36,17 @@ public class ProductController {
 
     @PostMapping
     public GenericProductDto createProduct(@RequestBody GenericProductDto product) throws NotFoundException {
-        // 1. Create a new product
-        // 2. PRODUCT_CREATED event is published
         return productService.createProduct(product);
     }
 
     @PutMapping("/{id}")
     public GenericProductDto updateProductById(@PathVariable("id") String id, @RequestBody GenericProductDto product)
             throws NotFoundException {
-        // 1. Update the product
-        // 2. PRODUCT_UPDATED event is published
         return productService.updateProduct(id, product);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<GenericProductDto> deleteProductById(@PathVariable String id) throws NotFoundException {
-        // 1. Delete the product
-        // 2. PRODUCT_DELETED event is published
         return new ResponseEntity<>(productService.deleteProduct(id),
                 HttpStatus.OK);
     }

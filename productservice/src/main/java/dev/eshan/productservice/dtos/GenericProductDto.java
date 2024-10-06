@@ -25,5 +25,6 @@ public class GenericProductDto implements Serializable {
     String imageUrl;
     Price price;
     Integer stockLevel;
+    Integer lowStockThreshold;
     GenericSupplierDto supplier;
 }

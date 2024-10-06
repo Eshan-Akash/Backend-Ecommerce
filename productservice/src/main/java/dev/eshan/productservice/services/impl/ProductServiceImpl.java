@@ -54,6 +54,8 @@ public class ProductServiceImpl implements ProductService {
                 genericProductDto.setSpecifications(product.getSpecifications());
                 genericProductDto.setImageUrl(product.getImageUrl());
                 genericProductDto.setPrice(product.getPrice());
+                genericProductDto.setStockLevel(product.getStockLevel());
+                genericProductDto.setLowStockThreshold(product.getLowStockThreshold());
                 genericProductDtos.add(genericProductDto);
                 genericProductDto.setCategory(GenericCategoryDto.builder()
                         .id(product.getCategory().getId())
@@ -85,6 +87,8 @@ public class ProductServiceImpl implements ProductService {
             genericProductDto.setSpecifications(product.getSpecifications());
             genericProductDto.setImageUrl(product.getImageUrl());
             genericProductDto.setPrice(product.getPrice());
+            genericProductDto.setStockLevel(product.getStockLevel());
+            genericProductDto.setLowStockThreshold(product.getLowStockThreshold());
 
             Optional<Category> category = categoryRepository.findById(product.getCategory().getId());
             if (category.isPresent()) {
@@ -123,6 +127,8 @@ public class ProductServiceImpl implements ProductService {
             product.setSpecifications(genericProductDto.getSpecifications());
             product.setImageUrl(genericProductDto.getImageUrl());
             product.setPrice(genericProductDto.getPrice());
+            product.setStockLevel(genericProductDto.getStockLevel());
+            product.setLowStockThreshold(genericProductDto.getLowStockThreshold());
 
             Category category = categoryRepository.findById(genericProductDto.getCategory().getId())
                     .orElseThrow(() -> new NotFoundException("Category not found by id: " + genericProductDto.getCategory().getId()));
