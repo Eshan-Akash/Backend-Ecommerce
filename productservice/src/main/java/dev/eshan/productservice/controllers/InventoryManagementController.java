@@ -2,7 +2,9 @@ package dev.eshan.productservice.controllers;
 
 
 import dev.eshan.productservice.dtos.GenericProductDto;
+import dev.eshan.productservice.exceptions.NotFoundException;
 import dev.eshan.productservice.services.interfaces.InventoryManagementService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,18 +14,18 @@ import java.util.List;
 public class InventoryManagementController {
     private final InventoryManagementService inventoryManagementService;
 
-    public InventoryManagementController(InventoryManagementService inventoryManagementService) {
+    public InventoryManagementController(@Qualifier("inventoryManagementServiceImpl")
+                                         InventoryManagementService inventoryManagementService) {
         this.inventoryManagementService = inventoryManagementService;
     }
 
     @GetMapping("/low-stock")
     public List<GenericProductDto> getLowStockProducts() {
-        // Get all products with low stock
         return inventoryManagementService.getLowStockProducts();
     }
 
     @PostMapping("/{id}/restock")
-    public void restockProduct(@PathVariable("id") String productId, @RequestParam int restockAmount) {
+    public void restockProduct(@PathVariable("id") String productId, @RequestParam int restockAmount) throws NotFoundException {
         inventoryManagementService.restockProduct(productId, restockAmount);
     }
 }

@@ -9,7 +9,7 @@ public interface ProductService {
     List<GenericProductDto> getProducts();
     GenericProductDto getProductById(String id, Long userIdTryingToAccess) throws NotFoundException;
     List<GenericProductDto> getProductsInCategory(String categoryId) throws NotFoundException;
-    GenericProductDto createProduct(GenericProductDto genericProductDto);
+    GenericProductDto createProduct(GenericProductDto genericProductDto) throws NotFoundException;
     GenericProductDto updateProduct(String id, GenericProductDto genericProductDto) throws NotFoundException;
     GenericProductDto deleteProduct(String id) throws NotFoundException;
     List<String> getProductTitles(List<String> categoryIDs);

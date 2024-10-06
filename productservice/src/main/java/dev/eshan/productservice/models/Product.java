@@ -1,9 +1,6 @@
 package dev.eshan.productservice.models;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +21,9 @@ public class Product extends BaseModel {
     Price price;
 
     Integer stockLevel;
+    Integer lowStockThreshold;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST})
-    Supplier supplier;
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")  // Foreign key to Supplier
+    Supplier supplier;  // Each product has one supplier
 }

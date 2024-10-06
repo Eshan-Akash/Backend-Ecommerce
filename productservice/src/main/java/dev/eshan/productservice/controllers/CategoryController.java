@@ -4,7 +4,9 @@ import dev.eshan.productservice.dtos.GenericCategoryDto;
 import dev.eshan.productservice.factory.CategoryServiceFactory;
 import dev.eshan.productservice.services.interfaces.CategoryService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -32,8 +34,12 @@ public class CategoryController {
 
     @PostMapping
     public GenericCategoryDto createCategory(@RequestBody GenericCategoryDto category) throws Exception {
-        // 1. Create a new category
-        // 2. CATEGORY_CREATED event is published
+        if (category == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category is required");
+        }
+        if (category.getName() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category name is required");
+        }
         CategoryService categoryService = categoryServiceFactory.create(serviceProviderId);
         return categoryService.createCategory(category);
     }
@@ -41,16 +47,12 @@ public class CategoryController {
     @PutMapping("/{id}")
     public GenericCategoryDto updateCategory(@PathVariable String id, @RequestBody GenericCategoryDto category)
             throws Exception {
-        // 1. Update the category
-        // 2. CATEGORY_UPDATED event is published
         CategoryService categoryService = categoryServiceFactory.create(serviceProviderId);
         return categoryService.updateCategory(id, category);
     }
 
     @DeleteMapping("/{id}")
     public void deleteCategory(@PathVariable String id) throws Exception {
-        // 1. Delete the category
-        // 2. CATEGORY_DELETED event is published
         CategoryService categoryService = categoryServiceFactory.create(serviceProviderId);
         categoryService.deleteCategory(id);
     }

@@ -1,7 +1,17 @@
 
-H
-java:S1168"+Return an empty collection instead of null.(¥¹ï8›Ñ·ß¥2
-H
-java:S1168"+Return an empty collection instead of null.(¥¹ï8Ñ·ß¥2
-H
-java:S1168-"+Return an empty collection instead of null.(¥¹ï8Ñ·ß¥2
+‰
+java:S1192"fDefine a constant instead of duplicating this literal "Error occurred while creating product" 3 times.(×¹®üÿÿÿÿ8”ÊŞı¥2
+‘
+java:S1192˜"sDefine a constant instead of duplicating this literal "Error occurred while fetching products in category" 3 times.(±äœá8”ÊŞı¥2
+„
+java:S1192Å"fDefine a constant instead of duplicating this literal "Error occurred while updating product" 3 times.(Ğ™Á8”ÊŞı¥2
+‰
+java:S1192ó"fDefine a constant instead of duplicating this literal "Error occurred while deleting product" 3 times.(³Ï¶ôøÿÿÿÿ8”ÊŞı¥2
+y
+java:S1192€"[Define a constant instead of duplicating this literal "Category not found by id: " 3 times.(Ì«ïø8“ÊŞı¥2
+w
+java:S1192O"ZDefine a constant instead of duplicating this literal "Product not found by id: " 4 times.(Ô‘Öõ8”ÊŞı¥2
+L
+java:S2201°"/The return value of "orElseThrow" must be used.(úÔ@8¶ÊŞı¥2
+R
+java:S2201¸"/The return value of "orElseThrow" must be used.(õä¿üøÿÿÿÿ8¸ÊŞı¥2
