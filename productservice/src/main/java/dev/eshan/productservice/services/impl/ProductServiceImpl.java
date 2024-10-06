@@ -14,6 +14,7 @@ import dev.eshan.productservice.repositories.ProductRepository;
 import dev.eshan.productservice.repositories.SupplierRepository;
 import dev.eshan.productservice.services.interfaces.ProductService;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service("productServiceImpl")
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
@@ -231,11 +233,45 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<GenericProductDto> getProductsInCategory(String categoryId) throws NotFoundException {
-        return null;
+        Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
+        if (categoryOptional.isEmpty()) {
+            throw new NotFoundException("Category not found by id: " + categoryId);
+        }
+        Category category = categoryOptional.get();
+        List<GenericProductDto> genericProductDtos = new ArrayList<>();
+        category.getProducts().forEach(product -> {
+            GenericProductDto genericProductDto = new GenericProductDto();
+            genericProductDto.setId(product.getId());
+            genericProductDto.setTitle(product.getTitle());
+            genericProductDto.setDescription(product.getDescription());
+            genericProductDto.setSpecifications(product.getSpecifications());
+            genericProductDto.setImageUrl(product.getImageUrl());
+            genericProductDto.setPrice(product.getPrice());
+            genericProductDto.setCategory(GenericCategoryDto.builder()
+                    .id(product.getCategory().getId())
+                    .name(product.getCategory().getName())
+                    .build());
+            genericProductDto.setSupplier(GenericSupplierDto.builder()
+                    .id(product.getSupplier().getId())
+                    .name(product.getSupplier().getName())
+                    .build());
+            genericProductDtos.add(genericProductDto);
+        });
+        return genericProductDtos;
     }
 
     @Override
     public List<String> getProductTitles(List<String> categoryIDs) {
-        return null;
+        List<Category> categories = categoryRepository.findAllById(categoryIDs);
+
+        List<Product> products = productRepository.findAllByCategoryIn(categories);
+
+        List<String> titles = new ArrayList<>();
+
+        for (Product p : products) {
+            titles.add(p.getTitle());
+        }
+
+        return titles;
     }
 }

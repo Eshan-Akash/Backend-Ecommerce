@@ -5,23 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fad061b5-b12d-420c-a5ef-cfeb6ed6d3a8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/dtos/GenericSupplierDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/3/2/3285abcd53c368aa6c5156b768471d64963f83ba" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/3/2/3285abcd53c368aa6c5156b768471d64963f83ba" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/a/5/a55c7648943230d8b024bc1263413b08c6fb0b4c" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/a/5/a55c7648943230d8b024bc1263413b08c6fb0b4c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/b/a/ba3a10f1b1cf9f9112960f8c688b5d55e25771a5" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/b/a/ba3a10f1b1cf9f9112960f8c688b5d55e25771a5" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/f/4/f448688c3d670a5edca4559cf13c5c6423974a8c" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/f/4/f448688c3d670a5edca4559cf13c5c6423974a8c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/index.pb" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/index.pb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/productservice/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/controllers/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/controllers/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/dtos/GenericCategoryDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/dtos/GenericCategoryDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/dtos/GenericProductDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/dtos/GenericProductDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/models/BaseModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/models/BaseModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/models/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/models/Product.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/models/Supplier.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/models/Supplier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/repositories/ProductRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/repositories/ProductRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/services/impl/ProductServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/services/impl/ProductServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/services/interfaces/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/productservice/src/main/java/dev/eshan/productservice/services/interfaces/ProductService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
