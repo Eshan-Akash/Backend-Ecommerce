@@ -1,0 +1,22 @@
+# Ignore IntelliJ IDEA project settings
+.idea/
+
+# Ignore target directory in a Java project
+target/
+
+# Ignore SonarLint issue store
+.idea/sonarlint/
+
+# Ignore log files
+*.log
+
+# Ignore compiled classes
+*.class
+
+# Ignore operating system files
+.DS_Store  # macOS
+Thumbs.db  # Windows
+
+# Ignore environment files (secrets)
+.env
+
