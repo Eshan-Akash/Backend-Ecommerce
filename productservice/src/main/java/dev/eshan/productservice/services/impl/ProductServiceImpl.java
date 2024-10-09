@@ -16,6 +16,7 @@ import dev.eshan.productservice.services.interfaces.ProductService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,14 +32,17 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private RedisTemplate<String, Object> redisTemplate;
 
     ProductServiceImpl(ProductRepository productRepository,
                        CategoryRepository categoryRepository,
-                       SupplierRepository supplierRepository, ApplicationEventPublisher eventPublisher) {
+                       SupplierRepository supplierRepository, ApplicationEventPublisher eventPublisher,
+                       RedisTemplate<String, Object> redisTemplate) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.supplierRepository = supplierRepository;
         this.eventPublisher = eventPublisher;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -71,7 +75,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public GenericProductDto getProductById(String id, Long userIdTryingToAccess) throws NotFoundException {
-        return getProductFromStoreById(id);
+        GenericProductDto genericProductDto = (GenericProductDto) redisTemplate.opsForHash().get("PRODUCT", id);
+        if (genericProductDto != null) {
+            return genericProductDto;
+        }
+        GenericProductDto genericProductDtoFromDB = getProductFromStoreById(id);
+        redisTemplate.opsForHash().put("PRODUCT", id, genericProductDtoFromDB);
+        return genericProductDtoFromDB;
     }
 
     @Transactional
