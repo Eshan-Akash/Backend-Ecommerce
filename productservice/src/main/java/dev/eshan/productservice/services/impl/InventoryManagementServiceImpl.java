@@ -7,18 +7,21 @@ import dev.eshan.productservice.exceptions.NotFoundException;
 import dev.eshan.productservice.models.Product;
 import dev.eshan.productservice.repositories.ProductRepository;
 import dev.eshan.productservice.services.interfaces.InventoryManagementService;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class InventoryManagementServiceImpl implements InventoryManagementService {
     private final ProductRepository productRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public InventoryManagementServiceImpl(ProductRepository productRepository) {
+    public InventoryManagementServiceImpl(ProductRepository productRepository,
+                                          RedisTemplate<String, Object> redisTemplate) {
         this.productRepository = productRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -60,5 +63,6 @@ public class InventoryManagementServiceImpl implements InventoryManagementServic
                 .orElseThrow(() -> new NotFoundException("Product not found by id: " + id));
         product.setStockLevel(product.getStockLevel() + quantity);
         productRepository.save(product);
+        redisTemplate.opsForHash().delete("PRODUCT", id);
     }
 }

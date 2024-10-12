@@ -10,33 +10,54 @@ import dev.eshan.productservice.models.Product;
 import dev.eshan.productservice.repositories.CategoryRepository;
 import dev.eshan.productservice.services.interfaces.CategoryService;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository,
-                               ApplicationEventPublisher eventPublisher) {
+                               ApplicationEventPublisher eventPublisher,
+                               RedisTemplate redisTemplate) {
         this.categoryRepository = categoryRepository;
         this.eventPublisher = eventPublisher;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
     public List<GenericCategoryDto> getAllCategories() {
+        List<GenericCategoryDto> genericCategoryDtoList = getCategoryListFromRedis();
+        if (genericCategoryDtoList != null) {
+            return genericCategoryDtoList;
+        }
         List<Category> categoryList = categoryRepository.findAll();
-        return categoryList.stream().map(category ->
+        List<GenericCategoryDto> categoryDtos =  categoryList.stream().map(category ->
                 GenericCategoryDto.builder()
                         .id(category.getId())
                         .name(category.getName())
                         .build()
         ).collect(Collectors.toList());
+        saveCategoryListToRedis(categoryDtos);
+        return categoryDtos;
+    }
+
+    public void saveCategoryListToRedis(List<GenericCategoryDto> productList) {
+        String cacheKey = "CATEGORY_LIST";
+        redisTemplate.opsForValue().set(cacheKey, productList);
+        redisTemplate.expire(cacheKey, 24, TimeUnit.HOURS);
+    }
+
+    public List<GenericCategoryDto> getCategoryListFromRedis() {
+        return (List<GenericCategoryDto>) redisTemplate.opsForValue().get("PRODUCT_LIST");
     }
 
     @Override
@@ -76,6 +97,9 @@ public class CategoryServiceImpl implements CategoryService {
         GenericCategoryDto savedCategoryDto = new GenericCategoryDto();
         savedCategoryDto.setId(savedCategory.getId());
         savedCategoryDto.setName(savedCategory.getName());
+
+        redisTemplate.opsForHash().delete("CATEGORY", id);
+        redisTemplate.delete("CATEGORY_LIST");
         eventPublisher.publishEvent(getCategoryEvent(savedCategoryDto, EventName.CATEGORY_UPDATED));
         return savedCategoryDto;
     }

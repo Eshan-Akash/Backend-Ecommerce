@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service("productServiceImpl")
@@ -32,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     ProductServiceImpl(ProductRepository productRepository,
                        CategoryRepository categoryRepository,
@@ -48,6 +49,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<GenericProductDto> getProducts() {
         try {
+            List<GenericProductDto> productDtoList = getProductListFromRedis();
+            if (productDtoList != null && !productDtoList.isEmpty()) {
+                return productDtoList;
+            }
             Optional<List<Product>> products = Optional.of(productRepository.findAll());
             List<GenericProductDto> genericProductDtos = new ArrayList<>();
             for (Product product : products.get()) {
@@ -66,6 +71,7 @@ public class ProductServiceImpl implements ProductService {
                         .name(product.getCategory().getName())
                         .build());
             }
+            saveProductListToRedis(genericProductDtos);
             return genericProductDtos;
         } catch (Exception e) {
             log.error("Error occurred while fetching products", e);
@@ -73,14 +79,25 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    public void saveProductListToRedis(List<GenericProductDto> productList) {
+        String cacheKey = "PRODUCT_LIST";
+        redisTemplate.opsForValue().set(cacheKey, productList);
+        redisTemplate.expire(cacheKey, 10, TimeUnit.MINUTES);
+    }
+
+    public List<GenericProductDto> getProductListFromRedis() {
+        return (List<GenericProductDto>) redisTemplate.opsForValue().get("PRODUCT_LIST");
+    }
+
     @Override
     public GenericProductDto getProductById(String id, Long userIdTryingToAccess) throws NotFoundException {
         GenericProductDto genericProductDto = (GenericProductDto) redisTemplate.opsForHash().get("PRODUCT", id);
-        if (genericProductDto != null) {
+        if (genericProductDto != null && genericProductDto.getStockLevel() > genericProductDto.getLowStockThreshold()) {
             return genericProductDto;
         }
         GenericProductDto genericProductDtoFromDB = getProductFromStoreById(id);
         redisTemplate.opsForHash().put("PRODUCT", id, genericProductDtoFromDB);
+        redisTemplate.expire("PRODUCT", 10, TimeUnit.MINUTES);
         return genericProductDtoFromDB;
     }
 
@@ -154,6 +171,8 @@ public class ProductServiceImpl implements ProductService {
             genericProductDto.getSupplier().setId(savedProduct.getSupplier().getId());
 
             eventPublisher.publishEvent(getProductEvent(genericProductDto, EventName.PRODUCT_CREATED));
+            // Invalidate cache
+            redisTemplate.delete("PRODUCT_LIST");
             return genericProductDto;
         } catch (NotFoundException e) {
             log.error("Error occurred while creating product", e);
@@ -217,6 +236,7 @@ public class ProductServiceImpl implements ProductService {
             genericProductDto.getCategory().setId(savedProduct.getCategory().getId());
             genericProductDto.getSupplier().setId(savedProduct.getSupplier().getId());
 
+            redisTemplate.opsForHash().delete("PRODUCT", id);
             eventPublisher.publishEvent(getProductEvent(genericProductDto, EventName.PRODUCT_UPDATED));
             return genericProductDto;
         } catch (NotFoundException e) {

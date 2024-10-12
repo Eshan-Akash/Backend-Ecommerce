@@ -11,6 +11,7 @@ import dev.eshan.productservice.repositories.SupplierRepository;
 import dev.eshan.productservice.services.interfaces.SupplierIntegrationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -19,12 +20,14 @@ public class SupplierIntegrationServiceImpl implements SupplierIntegrationServic
     private final ProductRepository productRepository;
     private final SupplierRepository supplierRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public SupplierIntegrationServiceImpl(ProductRepository productRepository, SupplierRepository supplierRepository,
-                                          ApplicationEventPublisher eventPublisher) {
+                                          ApplicationEventPublisher eventPublisher, RedisTemplate<String, Object> redisTemplate) {
         this.productRepository = productRepository;
         this.supplierRepository = supplierRepository;
         this.eventPublisher = eventPublisher;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
