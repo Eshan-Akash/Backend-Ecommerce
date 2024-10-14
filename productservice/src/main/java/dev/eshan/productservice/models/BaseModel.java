@@ -7,9 +7,11 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.io.Serializable;
+
 @Data
 @MappedSuperclass
-public class BaseModel {
+public class BaseModel implements Serializable {
     @Id
     @GeneratedValue(generator = "uuidgenerator")
     @GenericGenerator(name = "uuidgenerator", strategy = "uuid2")
