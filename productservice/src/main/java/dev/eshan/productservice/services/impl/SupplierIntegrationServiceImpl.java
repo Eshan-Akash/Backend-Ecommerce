@@ -20,14 +20,12 @@ public class SupplierIntegrationServiceImpl implements SupplierIntegrationServic
     private final ProductRepository productRepository;
     private final SupplierRepository supplierRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final RedisTemplate<String, Object> redisTemplate;
 
     public SupplierIntegrationServiceImpl(ProductRepository productRepository, SupplierRepository supplierRepository,
-                                          ApplicationEventPublisher eventPublisher, RedisTemplate<String, Object> redisTemplate) {
+                                          ApplicationEventPublisher eventPublisher) {
         this.productRepository = productRepository;
         this.supplierRepository = supplierRepository;
         this.eventPublisher = eventPublisher;
-        this.redisTemplate = redisTemplate;
     }
 
     @Override
