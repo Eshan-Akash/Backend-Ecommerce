@@ -24,10 +24,6 @@ public class User extends BaseModel {
     private String address;
     private String profileImageUrl;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @Column(nullable = false)
-    private Boolean isEnabled = true;
-
     // One-to-Many Relationship with Roles (Each User can have multiple Roles)
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles",

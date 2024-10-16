@@ -20,7 +20,7 @@ public class Review extends BaseModel {
     private User user;
 
     @Column(nullable = false)
-    private Long productId; // Assuming productId is stored separately
+    private String productId; // Assuming productId is stored separately
 
     private LocalDateTime createdAt = LocalDateTime.now();
 }

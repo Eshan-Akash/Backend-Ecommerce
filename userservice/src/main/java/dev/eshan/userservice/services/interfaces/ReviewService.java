@@ -1,6 +1,5 @@
 package dev.eshan.userservice.services.interfaces;
 
-import dev.eshan.userservice.dtos.CreateReviewDto;
 import dev.eshan.userservice.dtos.CreateReviewRequestDto;
 import dev.eshan.userservice.dtos.ReviewDto;
 
