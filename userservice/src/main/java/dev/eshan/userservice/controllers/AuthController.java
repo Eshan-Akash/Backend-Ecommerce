@@ -3,6 +3,7 @@ package dev.eshan.userservice.controllers;
 import dev.eshan.userservice.dtos.*;
 import dev.eshan.userservice.models.SessionStatus;
 import dev.eshan.userservice.services.interfaces.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -26,8 +27,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public UserDto login(@Valid @RequestBody LoginRequestDto request) throws Exception {
-        return authService.login(request.getEmail(), request.getPassword());
+    public UserDto login(@Valid @RequestBody LoginRequestDto request, HttpServletResponse response) throws Exception {
+        return authService.login(request.getEmail(), request.getPassword(), response);
     }
 
     @PostMapping("/logout")

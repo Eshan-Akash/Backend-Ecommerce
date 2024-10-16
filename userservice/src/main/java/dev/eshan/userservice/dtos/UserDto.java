@@ -22,6 +22,7 @@ public class UserDto {
     String phoneNumber;
     String profileImageUrl;
     Set<String> roles = new HashSet<>();
+    String token;
     public static UserDto from(User user) {
         return UserDto.builder()
                 .id(user.getId())

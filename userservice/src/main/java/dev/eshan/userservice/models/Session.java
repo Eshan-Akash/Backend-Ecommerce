@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -13,7 +14,7 @@ public class Session extends BaseModel {
     private String token;
 
     @Column(nullable = false)
-    private Instant expiringAt;
+    private LocalDateTime expiringAt;
 
     @ManyToOne
     @JoinColumn(nullable = false)
