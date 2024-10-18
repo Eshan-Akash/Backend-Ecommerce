@@ -30,11 +30,11 @@ public class User extends BaseModel {
     private String address;
     private String profileImageUrl;
 
-    // One-to-Many Relationship with Roles (Each User can have multiple Roles)
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_roles",
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
 
     // If you are using two-factor authentication
