@@ -1,5 +1,6 @@
 package dev.eshan.userservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,8 +20,4 @@ import java.util.Set;
 public class Role extends BaseModel {
     @Column(nullable = false, unique = true)
     private String role;
-
-    // Many-to-Many Relationship with Users
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
 }

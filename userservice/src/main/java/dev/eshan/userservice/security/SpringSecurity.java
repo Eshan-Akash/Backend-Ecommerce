@@ -8,12 +8,15 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SpringSecurity {
-    @Bean
-    public SecurityFilterChain filteringCriteria(HttpSecurity http) throws Exception {
-        http.csrf((csrf) -> csrf.disable());
-        http.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
-        return http.build();
-    }
+    /***
+     * NOTE : We are removing this since we are using OAuth2 now, and we don't need this
+     */
+//    @Bean
+//    public SecurityFilterChain filteringCriteria(HttpSecurity http) throws Exception {
+//        http.csrf((csrf) -> csrf.disable());
+//        http.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
+//        return http.build();
+//    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
