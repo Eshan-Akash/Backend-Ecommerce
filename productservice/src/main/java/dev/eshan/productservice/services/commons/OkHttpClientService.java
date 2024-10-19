@@ -136,7 +136,6 @@ public class OkHttpClientService {
                 .build();
     }
 
-
     @Retryable(retryFor = {RetryableHttpServiceException.class, IOException.class, HttpConnectTimeoutException.class,
             HttpTimeoutException.class}, maxAttempts = 3, backoff = @Backoff(delay = 10))
     public String deleteCall(String url, String body, Map<String, String> headersMap) throws IOException {
