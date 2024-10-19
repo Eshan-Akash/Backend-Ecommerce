@@ -1,4 +1,4 @@
-package dev.eshan.userservice.security;
+package dev.eshan.userservice.security.CustomOauth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
