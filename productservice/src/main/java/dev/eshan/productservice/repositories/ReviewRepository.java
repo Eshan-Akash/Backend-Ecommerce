@@ -1,6 +1,6 @@
-package dev.eshan.userservice.repositories;
+package dev.eshan.productservice.repositories;
 
-import dev.eshan.userservice.models.Review;
+import dev.eshan.productservice.models.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

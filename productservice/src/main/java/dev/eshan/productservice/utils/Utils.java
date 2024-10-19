@@ -4,6 +4,11 @@ import com.nimbusds.jose.shaded.gson.FieldNamingPolicy;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.jwt.Jwt;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class Utils {
@@ -31,5 +36,17 @@ public class Utils {
             return "image/jpeg";
         }
         return "application/octet-stream";
+    }
+
+    public static UserData createUserDataFromToken(Jwt jwt) {
+        Map<String, Object> claims = jwt.getClaims();
+        List<String> roles = (List<String>) claims.get("roles");
+        List<String> permissions = (List<String>) claims.get("scope");
+        return UserData.builder()
+                .userId(claims.get("userId").toString())
+                .email(claims.get("sub").toString())
+                .userRole(roles)
+                .userPermission(permissions)
+                .build();
     }
 }

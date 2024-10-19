@@ -90,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public GenericProductDto getProductById(String id, Long userIdTryingToAccess) throws NotFoundException {
+    public GenericProductDto getProductById(String id) throws NotFoundException {
         GenericProductDto genericProductDto = (GenericProductDto) redisTemplate.opsForHash().get("PRODUCT", id);
         if (genericProductDto != null && genericProductDto.getStockLevel() > genericProductDto.getLowStockThreshold()) {
             return genericProductDto;
