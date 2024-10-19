@@ -15,11 +15,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateReviewDto {
-    @NotNull(message = "Product ID is required")
-    String productId;
-
-    @NotNull(message = "User ID is required")
-    String userId;
     @NotNull(message = "Rating is required")
     @Min(value = 1, message = "Rating must be at least 1")
     @Max(value = 5, message = "Rating cannot be more than 5")

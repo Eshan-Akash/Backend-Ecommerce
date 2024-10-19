@@ -11,9 +11,13 @@ import dev.eshan.productservice.services.interfaces.ReviewService;
 import dev.eshan.productservice.utils.UserData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -55,8 +59,34 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ReviewDto updateReview(String reviewId, CreateReviewDto request, UserData userData) {
-        return null;
+    public ReviewDto updateReview(String reviewId, CreateReviewDto request, UserData userData) throws NotFoundException {
+        Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
+        if (!reviewOptional.isPresent()) {
+            throw new NotFoundException("Review not found by id: " + reviewId);
+        }
+
+        Review existingReview = reviewOptional.get();
+
+        if (!existingReview.getUserId().equals(userData.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized to update this review");
+        }
+
+        existingReview.setRating(request.getRating());
+        existingReview.setComment(request.getComment());
+        existingReview.setUpdatedAt(LocalDateTime.now());
+
+        Review updatedReview = reviewRepository.save(existingReview);
+
+        ReviewDto reviewDto = new ReviewDto();
+        reviewDto.setReviewId(updatedReview.getId());
+        reviewDto.setProductId(updatedReview.getProductId());
+        reviewDto.setUserId(updatedReview.getUserId());
+        reviewDto.setRating(updatedReview.getRating());
+        reviewDto.setComment(updatedReview.getComment());
+        reviewDto.setCreatedAt(updatedReview.getCreatedAt());
+        reviewDto.setUpdatedAt(updatedReview.getUpdatedAt());
+
+        return reviewDto;
     }
 
     @Override

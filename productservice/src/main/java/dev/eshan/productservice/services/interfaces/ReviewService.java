@@ -13,7 +13,7 @@ public interface ReviewService {
     ReviewDto createReview(String productId, CreateReviewDto request, UserData userData) throws NotFoundException;
 
     // Method to update an existing review (if needed)
-    ReviewDto updateReview(String reviewId, CreateReviewDto request, UserData userData);
+    ReviewDto updateReview(String reviewId, CreateReviewDto request, UserData userData) throws NotFoundException;
 
     // Method to delete a review by its ID
     void deleteReview(String reviewId, UserData userData);

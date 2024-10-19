@@ -34,21 +34,9 @@ public class ReviewController {
         return reviewService.createReview(productId, reviewDto, userData);
     }
 
-    @GetMapping("/product/{productId}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<ReviewDto> getReviewsByProduct(@PathVariable String productId) {
-        return reviewService.getReviewsByProduct(productId);
-    }
-
-    @GetMapping("/{reviewId}")
-    @ResponseStatus(HttpStatus.OK)
-    public ReviewDto getReviewById(@PathVariable String reviewId) {
-        return reviewService.getReviewById(reviewId);
-    }
-
     @PutMapping("/{reviewId}")
     @ResponseStatus(HttpStatus.OK)
-    public ReviewDto updateReview(@PathVariable String reviewId, @Valid @RequestBody CreateReviewDto reviewDto) {
+    public ReviewDto updateReview(@PathVariable String reviewId, @Valid @RequestBody CreateReviewDto reviewDto) throws NotFoundException {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserData userData = Utils.createUserDataFromToken(jwt);
         return reviewService.updateReview(reviewId, reviewDto, userData);
@@ -60,5 +48,17 @@ public class ReviewController {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserData userData = Utils.createUserDataFromToken(jwt);
         reviewService.deleteReview(reviewId, userData);
+    }
+
+    @GetMapping("/product/{productId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ReviewDto> getReviewsByProduct(@PathVariable String productId) {
+        return reviewService.getReviewsByProduct(productId);
+    }
+
+    @GetMapping("/{reviewId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ReviewDto getReviewById(@PathVariable String reviewId) {
+        return reviewService.getReviewById(reviewId);
     }
 }
