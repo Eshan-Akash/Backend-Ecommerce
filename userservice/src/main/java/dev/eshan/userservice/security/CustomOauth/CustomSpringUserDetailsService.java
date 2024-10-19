@@ -1,4 +1,4 @@
-package dev.eshan.userservice.security;
+package dev.eshan.userservice.security.CustomOauth;
 
 import dev.eshan.userservice.models.User;
 import dev.eshan.userservice.repositories.UserRepository;
