@@ -139,6 +139,10 @@ public class WebSecurityConfig {
                             .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
                     claims.put("roles", roles);
                     claims.put("userId", ((CustomSpringUserDetails) context.getPrincipal().getPrincipal()).getUser().getId());
+
+                    Instant now = Instant.now();
+                    long expiryInSeconds = 3600 * 24 * 7;
+                    claims.put("exp", now.plusSeconds(expiryInSeconds).getEpochSecond());
                 });
             }
         };
