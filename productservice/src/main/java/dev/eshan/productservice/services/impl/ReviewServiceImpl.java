@@ -91,16 +91,53 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void deleteReview(String reviewId, UserData userData) {
+        Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
+        if (!reviewOptional.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found by id: " + reviewId);
+        }
 
+        Review existingReview = reviewOptional.get();
+
+        if (!existingReview.getUserId().equals(userData.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized to delete this review");
+        }
+
+        reviewRepository.deleteById(reviewId);
     }
 
     @Override
     public List<ReviewDto> getReviewsByProduct(String productId) {
-        return null;
+        List<Review> reviewList = reviewRepository.findByProductId(productId);
+        return reviewList.stream().map(review -> {
+            ReviewDto reviewDto = new ReviewDto();
+            reviewDto.setReviewId(review.getId());
+            reviewDto.setProductId(review.getProductId());
+            reviewDto.setUserId(review.getUserId());
+            reviewDto.setRating(review.getRating());
+            reviewDto.setComment(review.getComment());
+            reviewDto.setCreatedAt(review.getCreatedAt());
+            reviewDto.setUpdatedAt(review.getUpdatedAt());
+            return reviewDto;
+        }).toList();
     }
 
     @Override
     public ReviewDto getReviewById(String reviewId) {
-        return null;
+        Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
+        if (reviewOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found by id: " + reviewId);
+        }
+
+        Review review = reviewOptional.get();
+        ReviewDto reviewDto = new ReviewDto();
+        reviewDto.setReviewId(review.getId());
+        reviewDto.setProductId(review.getProductId());
+        reviewDto.setUserId(review.getUserId());
+        reviewDto.setRating(review.getRating());
+        reviewDto.setComment(review.getComment());
+        reviewDto.setCreatedAt(review.getCreatedAt());
+        reviewDto.setUpdatedAt(review.getUpdatedAt());
+
+        return reviewDto;
     }
 }

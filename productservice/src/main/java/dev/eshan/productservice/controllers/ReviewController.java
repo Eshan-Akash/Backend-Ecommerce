@@ -35,7 +35,6 @@ public class ReviewController {
     }
 
     @PutMapping("/{reviewId}")
-    @ResponseStatus(HttpStatus.OK)
     public ReviewDto updateReview(@PathVariable String reviewId, @Valid @RequestBody CreateReviewDto reviewDto) throws NotFoundException {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserData userData = Utils.createUserDataFromToken(jwt);
@@ -43,7 +42,6 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{reviewId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReview(@PathVariable String reviewId) {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserData userData = Utils.createUserDataFromToken(jwt);
@@ -51,13 +49,11 @@ public class ReviewController {
     }
 
     @GetMapping("/product/{productId}")
-    @ResponseStatus(HttpStatus.OK)
     public List<ReviewDto> getReviewsByProduct(@PathVariable String productId) {
         return reviewService.getReviewsByProduct(productId);
     }
 
     @GetMapping("/{reviewId}")
-    @ResponseStatus(HttpStatus.OK)
     public ReviewDto getReviewById(@PathVariable String reviewId) {
         return reviewService.getReviewById(reviewId);
     }
