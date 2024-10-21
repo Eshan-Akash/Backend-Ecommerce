@@ -33,6 +33,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -138,6 +139,10 @@ public class WebSecurityConfig {
                             .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
                     claims.put("roles", roles);
                     claims.put("userId", ((CustomSpringUserDetails) context.getPrincipal().getPrincipal()).getUser().getId());
+
+                    Instant now = Instant.now();
+                    long expiryInSeconds = 3600 * 24 * 7;
+                    claims.put("exp", now.plusSeconds(expiryInSeconds).getEpochSecond());
                 });
             }
         };

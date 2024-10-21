@@ -27,7 +27,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public GenericProductDto getProductById(@PathVariable("id") String id) throws NotFoundException {
-        GenericProductDto productDto = productService.getProductById(id, null);
+        GenericProductDto productDto = productService.getProductById(id);
         if (productDto == null) {
             throw new NotFoundException("Product not found");
         }

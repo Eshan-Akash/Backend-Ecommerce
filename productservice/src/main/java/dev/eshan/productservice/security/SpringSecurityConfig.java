@@ -15,7 +15,7 @@ public class SpringSecurityConfig {
             throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/api/v1/products").hasAuthority("admin")
+//                        .requestMatchers("/api/v1/products").hasAuthority("admin")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(
