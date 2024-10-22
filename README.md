@@ -9,10 +9,10 @@ This project is a comprehensive eCommerce platform developed as part of a master
 - **Product Catalog**: Manages products, categories, descriptions, images, and specifications.
 - **Inventory Management**: Tracks stock levels, manages restocking, and provides low-stock alerts.
 - **Supplier Integration**: Automates the restocking process by managing supplier relationships.
+- **Reviews and Ratings**: Allows users to leave reviews and ratings on products, with moderation features.
 
 ### 2. UserService
 - **User Management**: Handles user registration, login, profile management, and secure password resets.
-- **Reviews and Ratings**: Allows users to leave reviews and ratings on products, with moderation features.
 - **Security**: Implements role-based access control, two-factor authentication, and social media logins.
 
 ### 3. OrderService
