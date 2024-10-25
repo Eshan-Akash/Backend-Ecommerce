@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,19 +17,35 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Order extends BaseModel {
 
+
     @Column(nullable = false)
     String customerId;
 
     @Column(nullable = false)
     Double totalAmount;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    List<CartItem> cartItems;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     OrderStatus orderStatus;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<OrderItem> orderItems = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL)
     Payment payment;
+
+    public void addOrderItem(OrderItem orderItem) {
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    public void calculateTotalAmount() {
+        totalAmount = orderItems.stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
+    }
+
+    public void updateStatus(OrderStatus newStatus) {
+        this.orderStatus = newStatus;
+    }
 }

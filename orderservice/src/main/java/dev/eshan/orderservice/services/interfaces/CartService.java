@@ -6,13 +6,13 @@ import dev.eshan.orderservice.dtos.DiscountCodeDto;
 
 public interface CartService {
 
-    void addToCart(CartItemDto cartItem);
+    CartDto addToCart(String userId, CartItemDto cartItem);
 
-    void updateCartItem(CartItemDto cartItem);
+    CartDto updateCartItem(String userId, CartItemDto cartItem);
 
-    void removeCartItem(String itemId);
+    void removeCartItem(String userId, String itemId);
 
-    void applyDiscount(DiscountCodeDto discountCode);
+    CartDto applyDiscount(String userId, DiscountCodeDto discountCode);
 
-    CartDto viewCart();
+    CartDto viewCart(String userId);
 }

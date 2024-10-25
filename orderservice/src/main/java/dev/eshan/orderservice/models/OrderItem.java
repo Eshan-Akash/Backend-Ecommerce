@@ -10,9 +10,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "cart_items")
+@Table(name = "order_items")
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class CartItem extends BaseModel {
+public class OrderItem extends BaseModel {
 
     @Column(nullable = false)
     String productId;
@@ -27,6 +27,6 @@ public class CartItem extends BaseModel {
     Double price;
 
     @ManyToOne
-    @JoinColumn(name = "cart_id")
-    Cart cart;
+    @JoinColumn(name = "order_id")
+    Order order;
 }
