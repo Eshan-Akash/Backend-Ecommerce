@@ -1,0 +1,31 @@
+package dev.eshan.orderservice.models;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Timestamp;
+
+@Data
+@MappedSuperclass
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public abstract class BaseModel {
+
+    @Id
+    @GeneratedValue(generator = "uuidgenerator")
+    @GenericGenerator(name = "uuidgenerator", strategy = "uuid2")
+    @Column(name = "id", columnDefinition = "varchar(64)", nullable = false, updatable = false)
+    String id;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = true, columnDefinition = "timestamp default CURRENT_TIMESTAMP")
+    Timestamp createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = true, columnDefinition = "timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    Timestamp updatedAt;
+}
