@@ -5,23 +5,31 @@ import dev.eshan.orderservice.dtos.CartItemDto;
 import dev.eshan.orderservice.dtos.DiscountCodeDto;
 import dev.eshan.orderservice.models.Cart;
 import dev.eshan.orderservice.models.CartItem;
+import dev.eshan.orderservice.models.Discount;
 import dev.eshan.orderservice.repositories.CartItemRepository;
 import dev.eshan.orderservice.repositories.CartRepository;
+import dev.eshan.orderservice.repositories.DiscountRepository;
 import dev.eshan.orderservice.services.interfaces.CartService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final DiscountRepository discountRepository;
 
-    public CartServiceImpl(CartRepository cartRepository, CartItemRepository cartItemRepository) {
+    public CartServiceImpl(CartRepository cartRepository, CartItemRepository cartItemRepository, DiscountRepository discountRepository) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
+        this.discountRepository = discountRepository;
     }
 
     @Override
@@ -71,14 +79,17 @@ public class CartServiceImpl implements CartService {
     }
 
     private CartDto createCartDto(Cart cart) {
-        CartDto cartDto = new CartDto();
-        cartDto.setUserId(cart.getUserId());
-        cartDto.setCartItems(cart.getCartItems().stream()
-                .map(item -> CartItemDto.of(item))
-                .collect(Collectors.toList()));
-        cartDto.setTotalOriginalPrice(cart.getTotalPrice());
-        cartDto.setFinalPrice(cart.getTotalPrice());
-        return cartDto;
+        double totalOriginalPrice = cart.getCartItems().stream()
+                .mapToDouble(item -> item.getPricePerUnit() * item.getQuantity())
+                .sum();
+        List<CartItemDto> cartItemDtoList = cart.getCartItems().stream()
+                .map(CartItemDto::of)
+                .collect(Collectors.toList());
+        return new CartDto(cart.getUserId(),
+                cartItemDtoList,
+                totalOriginalPrice,
+                cart.getDiscountCode(),
+                cart.getAppliedDiscount());
     }
 
     @Override
@@ -152,12 +163,43 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto applyDiscount(String userId, DiscountCodeDto discountCode) {
-        return null;
+    public CartDto applyDiscount(String userId, DiscountCodeDto discountCodeDto) {
+        // Step 1: Retrieve the cart associated with the user
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+
+        // Step 2: Validate the discount code
+        Discount discount = discountRepository.findByCode(discountCodeDto.getCode())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or non-existent discount code"));
+
+        if (!Boolean.TRUE.equals(discount.getIsActive())) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Discount code is inactive");
+        }
+
+        // Step 3: Calculate the discount and apply it to the cart
+        double discountAmount = cart.getTotalPrice() * (discount.getDiscountPercentage() / 100.0);
+        double finalPrice = cart.getTotalPrice() - discountAmount;
+
+        // Set the applied discount details in the cart
+        cart.setTotalPrice(finalPrice);
+        cart.setAppliedDiscount(discountAmount);
+        cart.setDiscountCode(discountCodeDto.getCode());
+
+        // Save the cart with the applied discount
+        cartRepository.save(cart);
+
+        // Step 4: Convert to DTO and return the updated cart
+        return createCartDto(cart);
     }
 
     @Override
     public CartDto viewCart(String userId) {
-        return null;
+        // Step 1: Retrieve the cart associated with the user
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+
+        // Step 2: Convert the cart entity to a CartDto
+        return createCartDto(cart);
     }
+
 }

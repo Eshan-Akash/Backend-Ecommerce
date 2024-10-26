@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Data
 @MappedSuperclass
@@ -19,20 +21,11 @@ public abstract class BaseModel {
     @Column(name = "id", columnDefinition = "varchar(64)", nullable = false, updatable = false)
     String id;
 
-    @Column(nullable = false, updatable = false)
-    LocalDateTime createdAt;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = true, columnDefinition = "timestamp default CURRENT_TIMESTAMP")
+    Timestamp createdAt;
 
-    @Column(nullable = false)
-    LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = true, columnDefinition = "timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    Timestamp updatedAt;
 }

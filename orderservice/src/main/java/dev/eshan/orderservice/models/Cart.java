@@ -25,4 +25,7 @@ public class Cart extends BaseModel {
 
     @Column(nullable = false)
     Double totalPrice = 0.0;
+
+    String discountCode;
+    Double appliedDiscount;
 }

@@ -9,15 +9,15 @@ import java.util.List;
 @NoArgsConstructor
 public class CartDto {
     private String userId;
-    private List<CartItemDto> cartItems;
+    private List<CartItemDto> cartItemDtoList;
     private double totalOriginalPrice;
     private String appliedDiscountCode;
     private double discountPrice = 0.0;
     private double finalPrice;
 
-    public CartDto(String userId, List<CartItemDto> cartItems, double totalOriginalPrice, String appliedDiscountCode, double discountPrice) {
+    public CartDto(String userId, List<CartItemDto> cartItemDtoList, double totalOriginalPrice, String appliedDiscountCode, double discountPrice) {
         this.userId = userId;
-        this.cartItems = cartItems;
+        this.cartItemDtoList = cartItemDtoList;
         this.totalOriginalPrice = totalOriginalPrice;
         this.appliedDiscountCode = appliedDiscountCode;
         this.discountPrice = discountPrice;
