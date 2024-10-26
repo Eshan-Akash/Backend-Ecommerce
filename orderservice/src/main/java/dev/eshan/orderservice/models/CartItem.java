@@ -24,7 +24,7 @@ public class CartItem extends BaseModel {
     Integer quantity;
 
     @Column(nullable = false)
-    Double price;
+    Double pricePerUnit;
 
     @ManyToOne
     @JoinColumn(name = "cart_id")

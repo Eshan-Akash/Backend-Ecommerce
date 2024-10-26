@@ -24,5 +24,5 @@ public class Cart extends BaseModel {
     List<CartItem> cartItems;
 
     @Column(nullable = false)
-    Double totalPrice;
+    Double totalPrice = 0.0;
 }

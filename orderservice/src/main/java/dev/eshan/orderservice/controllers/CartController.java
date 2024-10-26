@@ -16,13 +16,13 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public void addToCart(@RequestBody CartItemDto cartItem, @RequestParam String userId) {
-        cartService.addToCart(userId, cartItem);
+    public CartDto addToCart(@RequestBody CartItemDto cartItem, @RequestParam String userId) {
+        return cartService.addToCart(userId, cartItem);
     }
 
     @PutMapping("/update")
-    public void updateCartItem(@RequestBody CartItemDto cartItem, @RequestParam String userId) {
-        cartService.updateCartItem(userId, cartItem);
+    public CartDto updateCartItem(@RequestBody CartItemDto cartItem, @RequestParam String userId) {
+        return cartService.updateCartItem(userId, cartItem);
     }
 
     @DeleteMapping("/remove/{itemId}")
@@ -31,9 +31,8 @@ public class CartController {
     }
 
     @PostMapping("/apply-discount")
-    public String applyDiscount(@RequestBody DiscountCodeDto discountCode, @RequestParam String userId) {
-        cartService.applyDiscount(userId, discountCode);
-        return "Discount applied successfully";
+    public CartDto applyDiscount(@RequestBody DiscountCodeDto discountCode, @RequestParam String userId) {
+        return cartService.applyDiscount(userId, discountCode);
     }
 
     @GetMapping("/view")

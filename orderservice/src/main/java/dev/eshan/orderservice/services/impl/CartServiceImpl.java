@@ -10,6 +10,8 @@ import dev.eshan.orderservice.repositories.CartRepository;
 import dev.eshan.orderservice.services.interfaces.CartService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,21 +26,33 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartDto addToCart(String userId, CartItemDto cartItemDto) {
+        // Find or create the cart for the given user
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> createNewCart(userId));
 
-        CartItem cartItem = new CartItem();
-        cartItem.setProductId(cartItemDto.getProductId());
-        cartItem.setProductName(cartItemDto.getProductName());
-        cartItem.setQuantity(cartItemDto.getQuantity());
-        cartItem.setPrice(cartItemDto.getPricePerUnit());
+        // Check if the item already exists in the cart
+        Optional<CartItem> existingCartItemOpt = cartItemRepository.findByCartAndProductId(cart, cartItemDto.getProductId());
 
-        cartItem.setCart(cart);
+        if (existingCartItemOpt.isPresent()) {
+            // Update quantity if item exists
+            CartItem existingCartItem = existingCartItemOpt.get();
+            existingCartItem.setQuantity(cartItemDto.getQuantity());
+        } else {
+            // Create new cart item if it doesn't exist
+            CartItem cartItem = new CartItem();
+            cartItem.setProductId(cartItemDto.getProductId());
+            cartItem.setProductName(cartItemDto.getProductName());
+            cartItem.setQuantity(cartItemDto.getQuantity());
+            cartItem.setPricePerUnit(cartItemDto.getPricePerUnit());
+            cartItem.setCart(cart);
 
-        cartItemRepository.save(cartItem);
+            cartItemRepository.save(cartItem);
+        }
 
+        // Update the cart's total price after modifying items
         updateCartTotalPrice(cart);
 
+        // Return the updated cart details as a DTO
         return createCartDto(cart);
     }
 
@@ -50,7 +64,7 @@ public class CartServiceImpl implements CartService {
 
     private void updateCartTotalPrice(Cart cart) {
         double totalPrice = cart.getCartItems().stream()
-                .mapToDouble(item -> item.getQuantity() * item.getPrice())
+                .mapToDouble(item -> item.getQuantity() * item.getPricePerUnit())
                 .sum();
         cart.setTotalPrice(totalPrice);
         cartRepository.save(cart);
@@ -68,13 +82,73 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto updateCartItem(String userId, CartItemDto cartItem) {
-        return null;
+    public CartDto updateCartItem(String userId, CartItemDto cartItemDto) {
+        // Retrieve the cart for the specified user
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+
+        // Check if the cart item exists in the user's cart
+        CartItem existingCartItem = cart.getCartItems().stream()
+                .filter(item -> item.getProductId().equals(cartItemDto.getProductId()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Cart item not found for product ID: " + cartItemDto.getProductId()));
+
+        // Update the cart item details
+        existingCartItem.setQuantity(cartItemDto.getQuantity());
+        existingCartItem.setPricePerUnit(cartItemDto.getPricePerUnit());
+
+        // Save updated cart item to repository
+        cartItemRepository.save(existingCartItem);
+
+        // Update the total price for the cart
+        double updatedTotalPrice = cart.getCartItems().stream()
+                .mapToDouble(item -> item.getPricePerUnit() * item.getQuantity())
+                .sum();
+        cart.setTotalPrice(updatedTotalPrice);
+
+        // Save the updated cart to repository
+        cartRepository.save(cart);
+
+        // Map the updated cart to a CartDto to return as a response
+        List<CartItemDto> cartItems = cart.getCartItems().stream()
+                .map(CartItemDto::of)
+                .collect(Collectors.toList());
+
+        return new CartDto(userId,
+                cartItems,
+                updatedTotalPrice,
+                null,
+                0.0);
     }
 
     @Override
     public void removeCartItem(String userId, String itemId) {
+        // Retrieve the cart for the specified user
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
 
+        // Find the cart item to be removed or decreased in quantity
+        CartItem cartItem = cart.getCartItems().stream()
+                .filter(item -> item.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Cart item not found with ID: " + itemId));
+
+        // Decrease quantity or remove item if quantity is 1
+        if (cartItem.getQuantity() > 1) {
+            cartItem.setQuantity(cartItem.getQuantity() - 1);
+        } else {
+            cart.getCartItems().remove(cartItem);
+            cartItemRepository.delete(cartItem);
+        }
+
+        // Update the cart's total price
+        double updatedTotalPrice = cart.getCartItems().stream()
+                .mapToDouble(item -> item.getPricePerUnit() * item.getQuantity())
+                .sum();
+        cart.setTotalPrice(updatedTotalPrice);
+
+        // Save the updated cart in the repository
+        cartRepository.save(cart);
     }
 
     @Override

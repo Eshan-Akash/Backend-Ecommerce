@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class CartItemDto {
+    private String itemId;
     private String productId;
     private String productName;
     private int quantity;
@@ -13,10 +14,12 @@ public class CartItemDto {
 
     public static CartItemDto of(CartItem cartItem) {
         CartItemDto cartItemDto = new CartItemDto();
+        cartItemDto.setItemId(cartItem.getId());
         cartItemDto.setProductId(cartItem.getProductId());
         cartItemDto.setProductName(cartItem.getProductName());
         cartItemDto.setQuantity(cartItem.getQuantity());
-        cartItemDto.setPricePerUnit(cartItem.getPrice());
+        cartItemDto.setPricePerUnit(cartItem.getPricePerUnit());
+        cartItemDto.setTotalPrice(cartItem.getQuantity() * cartItem.getPricePerUnit());
         return cartItemDto;
     }
 }
