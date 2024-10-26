@@ -42,10 +42,12 @@ public class CartServiceImpl implements CartService {
         Optional<CartItem> existingCartItemOpt = cartItemRepository.findByCartAndProductId(cart, cartItemDto.getProductId());
 
         if (existingCartItemOpt.isPresent()) {
+            log.info("Item already exists in cart");
             // Update quantity if item exists
             CartItem existingCartItem = existingCartItemOpt.get();
             existingCartItem.setQuantity(cartItemDto.getQuantity());
         } else {
+            log.info("Item does not exist in cart");
             // Create new cart item if it doesn't exist
             CartItem cartItem = new CartItem();
             cartItem.setProductId(cartItemDto.getProductId());
@@ -55,7 +57,12 @@ public class CartServiceImpl implements CartService {
             cartItem.setCart(cart);
 
             cartItemRepository.save(cartItem);
+            cart.addCartItem(cartItem);
         }
+
+        // reset the applied discount and discount code
+        cart.setAppliedDiscount(0.0);
+        cart.setDiscountCode(null);
 
         // Update the cart's total price after modifying items
         updateCartTotalPrice(cart);
@@ -116,6 +123,10 @@ public class CartServiceImpl implements CartService {
                 .mapToDouble(item -> item.getPricePerUnit() * item.getQuantity())
                 .sum();
         cart.setTotalPrice(updatedTotalPrice);
+
+        // reset the applied discount and discount code
+        cart.setAppliedDiscount(0.0);
+        cart.setDiscountCode(null);
 
         // Save the updated cart to repository
         cartRepository.save(cart);
