@@ -1,17 +1,52 @@
 package dev.eshan.orderservice.dtos;
 
+import dev.eshan.orderservice.models.Order;
+import dev.eshan.orderservice.models.PaymentStatus;
 import lombok.Data;
-import java.time.LocalDateTime;
+
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class OrderDto {
     private String orderId;
     private String userId;
-    private List<CartItemDto> orderItems;
-    private String orderStatus;
     private double totalAmount;
-    private String paymentStatus;
+    private List<OrderItemDto> orderItemList;
+    private String orderStatus;
+    private Timestamp createdAt;
+    private PaymentStatus paymentStatus;
     private String shippingAddress;
-    private LocalDateTime orderDate;
+
+    /**
+     * Converts an Order entity to an OrderDto.
+     *
+     * @param order the Order entity to convert
+     * @return the converted OrderDto
+     */
+    public static OrderDto from(Order order) {
+        OrderDto orderDto = new OrderDto();
+
+        orderDto.setOrderId(order.getId());
+        orderDto.setUserId(order.getUserId());
+        orderDto.setTotalAmount(order.getTotalAmount());
+
+        orderDto.setOrderItemList(order.getOrderItemList().stream()
+                .map(OrderItemDto::from)
+                .collect(Collectors.toList()));
+
+        orderDto.setOrderStatus(order.getOrderStatus().name());
+        orderDto.setCreatedAt(order.getCreatedAt());
+
+        if (order.getPayment() != null) {
+            orderDto.setPaymentStatus(order.getPayment().getPaymentStatus());
+        } else {
+            orderDto.setPaymentStatus(null);
+        }
+
+        orderDto.setShippingAddress(order.getShippingAddress());
+
+        return orderDto;
+    }
 }

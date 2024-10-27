@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class CartDto {
+    private String orderId;
     private String userId;
     private List<CartItemDto> cartItemDtoList;
     private double totalOriginalPrice;

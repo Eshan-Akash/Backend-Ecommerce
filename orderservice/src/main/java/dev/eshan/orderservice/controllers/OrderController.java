@@ -18,8 +18,8 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public OrderDto createOrder() {
-        return orderService.createOrder();
+    public OrderDto createOrder(@RequestParam String userId) {
+        return orderService.createOrder(userId);
     }
 
     @GetMapping("/{orderId}")

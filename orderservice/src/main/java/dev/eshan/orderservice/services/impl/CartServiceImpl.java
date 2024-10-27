@@ -213,4 +213,21 @@ public class CartServiceImpl implements CartService {
         return createCartDto(cart);
     }
 
+    @Override
+    public void clearCart(String userId) {
+        // Find the cart by user ID
+        Optional<Cart> cartOptional = cartRepository.findByUserId(userId);
+        if (cartOptional.isPresent()) {
+            Cart cart = cartOptional.get();
+            // Remove all items in the cart
+            cartItemRepository.deleteAll(cart.getCartItems());
+            // Optionally, clear the cart items list and reset totals
+            cart.getCartItems().clear();
+            cart.setTotalPrice(0.0);
+            cart.setDiscountCode(null);
+            cart.setAppliedDiscount(0.0);
+            cart.setTotalPrice(0.0);
+            cartRepository.save(cart);
+        }
+    }
 }

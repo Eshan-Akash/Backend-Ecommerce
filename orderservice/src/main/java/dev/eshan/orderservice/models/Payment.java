@@ -1,9 +1,6 @@
 package dev.eshan.orderservice.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -23,8 +20,9 @@ public class Payment extends BaseModel {
     @Column(nullable = false)
     Double amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    Boolean paymentSuccess;
+    PaymentStatus paymentStatus;
 
     @OneToOne(mappedBy = "payment")
     Order order;
