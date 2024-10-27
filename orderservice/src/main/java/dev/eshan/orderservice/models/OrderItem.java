@@ -28,7 +28,7 @@ public class OrderItem extends BaseModel {
     private double price;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     public static OrderItem of(CartItemDto cartItemDto) {

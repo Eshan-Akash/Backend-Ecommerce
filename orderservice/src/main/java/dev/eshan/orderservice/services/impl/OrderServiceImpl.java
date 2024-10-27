@@ -3,6 +3,7 @@ package dev.eshan.orderservice.services.impl;
 import dev.eshan.orderservice.dtos.CartDto;
 import dev.eshan.orderservice.dtos.OrderDto;
 import dev.eshan.orderservice.dtos.TrackingStatusDto;
+import dev.eshan.orderservice.exceptions.NotFoundException;
 import dev.eshan.orderservice.models.Order;
 import dev.eshan.orderservice.models.OrderItem;
 import dev.eshan.orderservice.models.OrderStatus;
@@ -15,6 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,10 +49,12 @@ public class OrderServiceImpl implements OrderService {
         order.setUserId(userId);
         order.setTotalAmount(cartDto.getFinalPrice());
         order.setOrderStatus(OrderStatus.PENDING);
+        order.setShippingAddress("ABC");
 
         // Convert cart items to order items and attach to the order
         List<OrderItem> orderItems = cartDto.getCartItemDtoList().stream()
                 .map(cartItem -> OrderItem.of(cartItem))
+                .peek(item -> item.setOrder(order))
                 .collect(Collectors.toList());
         order.setOrderItemList(orderItems);
 
@@ -62,17 +69,48 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDto getOrderById(String orderId) {
-        return null;
+    public OrderDto getOrderById(String orderId) throws NotFoundException {
+        // Retrieve the order from the repository
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found with ID: " + orderId));
+
+        // Convert the order to OrderDto
+        return OrderDto.from(order);
     }
 
     @Override
-    public List<OrderDto> getOrderHistory() {
-        return null;
+    public List<OrderDto> getOrderHistory(String userId) {
+        // Fetch orders for a specific user
+        List<Order> orders = orderRepository.findByUserId(userId);
+
+        // Convert the list of Order entities to a list of OrderDto
+        return orders.stream()
+                .map(OrderDto::from)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public TrackingStatusDto trackOrder(String orderId) {
-        return null;
+    public TrackingStatusDto trackOrder(String orderId) throws NotFoundException {
+        // Retrieve the order from the repository
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found with ID: " + orderId));
+
+        // Map order details to TrackingStatusDto
+        TrackingStatusDto trackingStatus = new TrackingStatusDto();
+        trackingStatus.setOrderId(order.getId());
+        trackingStatus.setOrderStatus(order.getOrderStatus().name());
+        trackingStatus.setCreatedAt(String.valueOf(order.getCreatedAt()));
+
+        // If applicable, set estimated delivery time (optional)
+        if (order.getOrderStatus() == OrderStatus.SHIPPED) {
+            trackingStatus.setEstimatedDeliveryDate(calculateEstimatedDelivery(order.getCreatedAt()));
+        }
+
+        return trackingStatus;
+    }
+
+    private String calculateEstimatedDelivery(Timestamp createdAt) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        return createdAt.toLocalDateTime().plusDays(5).format(formatter);
     }
 }
