@@ -11,14 +11,14 @@ import dev.eshan.orderservice.repositories.OrderRepository;
 import dev.eshan.orderservice.services.interfaces.CartService;
 import dev.eshan.orderservice.services.interfaces.OrderService;
 import dev.eshan.orderservice.services.interfaces.PaymentService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +28,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final CartService cartService;
     private final PaymentService paymentService;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public OrderServiceImpl(OrderRepository orderRepository, CartService cartService, PaymentService paymentService) {
         this.orderRepository = orderRepository;
@@ -60,6 +62,8 @@ public class OrderServiceImpl implements OrderService {
 
         // Save the order
         Order savedOrder = orderRepository.save(order);
+        entityManager.flush();
+        entityManager.refresh(savedOrder);
 
         // Clear the cart after order creation
         cartService.clearCart(userId);
@@ -99,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
         TrackingStatusDto trackingStatus = new TrackingStatusDto();
         trackingStatus.setOrderId(order.getId());
         trackingStatus.setOrderStatus(order.getOrderStatus().name());
-        trackingStatus.setCreatedAt(String.valueOf(order.getCreatedAt()));
+        trackingStatus.setCreatedAt(order.getCreatedAt().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
         // If applicable, set estimated delivery time (optional)
         if (order.getOrderStatus() == OrderStatus.SHIPPED) {

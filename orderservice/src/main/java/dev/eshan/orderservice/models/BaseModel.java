@@ -22,10 +22,10 @@ public abstract class BaseModel {
     String id;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = true, columnDefinition = "timestamp default CURRENT_TIMESTAMP")
+    @Column(name = "created_at", nullable = false, columnDefinition = "timestamp default CURRENT_TIMESTAMP")
     Timestamp createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = true, columnDefinition = "timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(name = "updated_at", nullable = false, columnDefinition = "timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     Timestamp updatedAt;
 }
