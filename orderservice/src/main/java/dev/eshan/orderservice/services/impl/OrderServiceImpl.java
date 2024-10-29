@@ -50,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setUserId(userId);
         order.setTotalAmount(cartDto.getFinalPrice());
-        order.setOrderStatus(OrderStatus.PENDING);
+        order.setOrderStatus(OrderStatus.INIT);
         order.setShippingAddress("ABC");
 
         // Convert cart items to order items and attach to the order

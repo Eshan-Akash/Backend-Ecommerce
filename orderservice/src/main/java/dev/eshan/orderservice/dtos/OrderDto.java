@@ -1,6 +1,7 @@
 package dev.eshan.orderservice.dtos;
 
 import dev.eshan.orderservice.models.Order;
+import dev.eshan.orderservice.models.OrderStatus;
 import dev.eshan.orderservice.models.PaymentStatus;
 import lombok.Data;
 
@@ -14,7 +15,7 @@ public class OrderDto {
     private String userId;
     private double totalAmount;
     private List<OrderItemDto> orderItemList;
-    private String orderStatus;
+    private OrderStatus orderStatus;
     private Timestamp createdAt;
     private PaymentStatus paymentStatus;
     private String shippingAddress;
@@ -36,7 +37,7 @@ public class OrderDto {
                 .map(OrderItemDto::from)
                 .collect(Collectors.toList()));
 
-        orderDto.setOrderStatus(order.getOrderStatus().name());
+        orderDto.setOrderStatus(order.getOrderStatus());
         orderDto.setCreatedAt(order.getCreatedAt());
 
         if (order.getPayment() != null) {

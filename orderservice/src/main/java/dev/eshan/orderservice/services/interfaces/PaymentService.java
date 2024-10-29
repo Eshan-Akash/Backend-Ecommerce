@@ -7,7 +7,7 @@ import dev.eshan.orderservice.dtos.RetryPaymentDto;
 
 public interface PaymentService {
 
-    PaymentResponseDto processPayment(PaymentRequestDto paymentRequest);
+    PaymentResponseDto processPayment(String orderId);
 
     PaymentStatusDto getPaymentStatus(String paymentId);
 

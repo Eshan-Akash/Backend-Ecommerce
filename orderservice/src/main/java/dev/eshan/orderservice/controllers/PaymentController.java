@@ -18,8 +18,8 @@ public class PaymentController {
     }
 
     @PostMapping("/process")
-    public PaymentResponseDto processPayment(@RequestBody PaymentRequestDto paymentRequest) {
-        return paymentService.processPayment(paymentRequest);
+    public PaymentResponseDto processPayment(@RequestParam String orderId) {
+        return paymentService.processPayment(orderId);
     }
 
     @GetMapping("/status/{paymentId}")

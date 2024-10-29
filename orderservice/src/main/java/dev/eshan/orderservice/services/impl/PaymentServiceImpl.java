@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PaymentServiceImpl implements PaymentService {
     @Override
-    public PaymentResponseDto processPayment(PaymentRequestDto paymentRequest) {
+    public PaymentResponseDto processPayment(String orderId) {
         return null;
     }
 
