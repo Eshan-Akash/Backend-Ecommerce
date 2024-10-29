@@ -1,9 +1,7 @@
 package dev.eshan.orderservice.controllers;
 
-import dev.eshan.orderservice.dtos.PaymentRequestDto;
-import dev.eshan.orderservice.dtos.PaymentResponseDto;
-import dev.eshan.orderservice.dtos.PaymentStatusDto;
-import dev.eshan.orderservice.dtos.RetryPaymentDto;
+import dev.eshan.orderservice.dtos.*;
+import dev.eshan.orderservice.exceptions.NotFoundException;
 import dev.eshan.orderservice.services.interfaces.PaymentService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +16,13 @@ public class PaymentController {
     }
 
     @PostMapping("/process")
-    public PaymentResponseDto processPayment(@RequestParam String orderId) {
+    public PaymentResponseDto processPayment(@RequestParam String orderId) throws NotFoundException {
         return paymentService.processPayment(orderId);
+    }
+
+    @PostMapping("/confirm")
+    public PaymentConfirmationResponse confirmPayment(@RequestParam String orderId) throws NotFoundException {
+        return paymentService.confirmPayment(orderId);
     }
 
     @GetMapping("/status/{paymentId}")

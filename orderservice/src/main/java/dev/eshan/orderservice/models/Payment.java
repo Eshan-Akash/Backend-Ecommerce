@@ -24,6 +24,9 @@ public class Payment extends BaseModel {
     @Column(nullable = false)
     PaymentStatus paymentStatus;
 
+    @Column
+    String transactionId;
+
     @OneToOne(mappedBy = "payment")
     Order order;
 }
