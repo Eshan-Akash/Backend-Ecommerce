@@ -8,7 +8,7 @@ public interface PaymentService {
     PaymentResponseDto processPayment(String orderId) throws NotFoundException;
     PaymentConfirmationResponse confirmPayment(String orderId) throws NotFoundException;
 
-    PaymentStatusDto getPaymentStatus(String paymentId);
+    PaymentStatusDto getPaymentStatus(String paymentId) throws NotFoundException;
 
-    PaymentResponseDto retryPayment(RetryPaymentDto retryPayment);
+    PaymentResponseDto retryPayment(RetryPaymentDto retryPayment) throws NotFoundException;
 }

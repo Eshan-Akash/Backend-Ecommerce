@@ -26,12 +26,12 @@ public class PaymentController {
     }
 
     @GetMapping("/status/{paymentId}")
-    public PaymentStatusDto getPaymentStatus(@PathVariable String paymentId) {
+    public PaymentStatusDto getPaymentStatus(@PathVariable String paymentId) throws NotFoundException {
         return paymentService.getPaymentStatus(paymentId);
     }
 
     @PostMapping("/retry")
-    public PaymentResponseDto retryPayment(@RequestBody RetryPaymentDto retryPayment) {
+    public PaymentResponseDto retryPayment(@RequestBody RetryPaymentDto retryPayment) throws NotFoundException {
         return paymentService.retryPayment(retryPayment);
     }
 }

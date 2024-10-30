@@ -99,12 +99,50 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentStatusDto getPaymentStatus(String paymentId) {
-        return null;
+    public PaymentStatusDto getPaymentStatus(String paymentId) throws NotFoundException {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new NotFoundException("Payment not found for ID: " + paymentId));
+
+        // Fetch the current status of the payment from the mock gateway
+        PaymentVerificationResponse verificationResponse = paymentGateway.verifyPayment(payment.getTransactionId());
+
+        // Update payment status in the database based on the verification response
+        payment.setPaymentStatus(verificationResponse.isSuccess() ? PaymentStatus.SUCCESS : PaymentStatus.FAILED);
+        paymentRepository.save(payment);
+
+        return new PaymentStatusDto(payment.getTransactionId(), payment.getPaymentStatus().name());
     }
 
     @Override
-    public PaymentResponseDto retryPayment(RetryPaymentDto retryPayment) {
-        return null;
+    public PaymentResponseDto retryPayment(RetryPaymentDto retryPayment) throws NotFoundException {
+        Order order = orderRepository.findById(retryPayment.getOrderId())
+                .orElseThrow(() -> new NotFoundException("Order not found for ID: " + retryPayment.getOrderId()));
+
+        // Ensure the order status is pending, otherwise return failure response
+        if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
+            throw new IllegalStateException("Payment retry is allowed only for pending orders.");
+        }
+
+        // Generate a new payment redirect URL for retry
+        PaymentRedirectResponse redirectResponse = paymentGateway.generatePaymentRedirectURL(order.getId(), order.getTotalAmount());
+
+        // Update payment record in the database with the new transaction ID and status as PENDING
+        Payment payment = order.getPayment();
+        payment.setTransactionId(redirectResponse.getTransactionId());
+        payment.setPaymentStatus(PaymentStatus.PENDING);
+        paymentRepository.save(payment);
+
+        // Return the payment response DTO with the redirect URL
+        PaymentResponseDto responseDto = new PaymentResponseDto();
+        responseDto.setMessage("Payment retry initiated");
+        responseDto.setPaymentId(payment.getId());
+        responseDto.setPaymentMethod(payment.getPaymentGateway());
+        responseDto.setPaymentStatus(PaymentStatus.PENDING);
+        responseDto.setTransactionId(redirectResponse.getTransactionId());
+        responseDto.setAmountPaid(order.getTotalAmount());
+        responseDto.setRedirectUrl(redirectResponse.getRedirectUrl());  // URL to redirect user for payment
+
+        // Return the new payment redirect URL and transaction information
+        return responseDto;
     }
 }
