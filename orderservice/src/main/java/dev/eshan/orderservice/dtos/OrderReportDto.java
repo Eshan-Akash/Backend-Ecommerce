@@ -1,12 +1,11 @@
 package dev.eshan.orderservice.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
 public class OrderReportDto {
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
     private int totalOrders;
     private double totalRevenue;
 }
