@@ -2,6 +2,7 @@ package dev.eshan.orderservice.controllers;
 
 import dev.eshan.orderservice.dtos.OrderDto;
 import dev.eshan.orderservice.dtos.TrackingStatusDto;
+import dev.eshan.orderservice.dtos.UserDetails;
 import dev.eshan.orderservice.exceptions.NotFoundException;
 import dev.eshan.orderservice.services.interfaces.OrderService;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,8 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public OrderDto createOrder(@RequestParam String userId) {
-        return orderService.createOrder(userId);
+    public OrderDto createOrder(@RequestParam String userId, UserDetails userDetails) {
+        return orderService.createOrder(userId, userDetails);
     }
 
     @GetMapping("/{orderId}")

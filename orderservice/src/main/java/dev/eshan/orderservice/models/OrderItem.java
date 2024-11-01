@@ -36,6 +36,7 @@ public class OrderItem extends BaseModel {
         orderItem.setProductId(cartItemDto.getProductId());
         orderItem.setProductName(cartItemDto.getProductName());
         orderItem.setQuantity(cartItemDto.getQuantity());
+        orderItem.setPrice(cartItemDto.getPricePerUnit());
         return orderItem;
     }
 }

@@ -1,15 +1,11 @@
 package dev.eshan.orderservice.services.impl;
 
-import dev.eshan.orderservice.dtos.CartDto;
-import dev.eshan.orderservice.dtos.CheckoutRequestDto;
-import dev.eshan.orderservice.dtos.CheckoutResponseDto;
-import dev.eshan.orderservice.dtos.OrderDto;
+import dev.eshan.orderservice.dtos.*;
 import dev.eshan.orderservice.exceptions.NotFoundException;
 import dev.eshan.orderservice.models.OrderStatus;
 import dev.eshan.orderservice.services.interfaces.CartService;
 import dev.eshan.orderservice.services.interfaces.CheckoutService;
 import dev.eshan.orderservice.services.interfaces.OrderService;
-import dev.eshan.orderservice.services.interfaces.PaymentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,12 +14,10 @@ import org.springframework.web.server.ResponseStatusException;
 public class CheckoutServiceImpl implements CheckoutService {
     private final CartService cartService;
     private final OrderService orderService;
-    private final PaymentService paymentService;
 
-    public CheckoutServiceImpl(CartService cartService, OrderService orderService, PaymentService paymentService) {
+    public CheckoutServiceImpl(CartService cartService, OrderService orderService) {
         this.cartService = cartService;
         this.orderService = orderService;
-        this.paymentService = paymentService;
     }
 
     @Override
@@ -33,8 +27,11 @@ public class CheckoutServiceImpl implements CheckoutService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty");
         }
 
+        UserDetails userDetails = UserDetails.builder()
+                .address(checkoutRequest.getShippingAddress())
+                .build();
         // Create the order
-        OrderDto order = orderService.createOrder(userId);
+        OrderDto order = orderService.createOrder(userId, userDetails);
 
         // Redirect to the payment page with the generated order ID
         String paymentUrl = "/api/v1/payment/process?orderId=" + order.getOrderId();
@@ -51,6 +48,8 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         // Convert the order status to a meaningful message
         switch (orderStatus) {
+            case INIT:
+                return "Your order has been created and is awaiting payment.";
             case PENDING:
                 return "Your order is pending. Please complete the payment.";
             case PROCESSING:

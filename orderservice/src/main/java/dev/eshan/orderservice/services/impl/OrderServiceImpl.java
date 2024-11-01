@@ -3,6 +3,7 @@ package dev.eshan.orderservice.services.impl;
 import dev.eshan.orderservice.dtos.CartDto;
 import dev.eshan.orderservice.dtos.OrderDto;
 import dev.eshan.orderservice.dtos.TrackingStatusDto;
+import dev.eshan.orderservice.dtos.UserDetails;
 import dev.eshan.orderservice.exceptions.NotFoundException;
 import dev.eshan.orderservice.models.Order;
 import dev.eshan.orderservice.models.OrderItem;
@@ -39,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderDto createOrder(String userId) {
+    public OrderDto createOrder(String userId, UserDetails userDetails) {
         // Retrieve user's cart for the current order
         CartDto cartDto = cartService.viewCart(userId);
         if (cartDto.getCartItemDtoList().isEmpty()) {
@@ -51,7 +52,9 @@ public class OrderServiceImpl implements OrderService {
         order.setUserId(userId);
         order.setTotalAmount(cartDto.getFinalPrice());
         order.setOrderStatus(OrderStatus.INIT);
-        order.setShippingAddress("ABC");
+        order.setShippingAddress(userDetails.getAddress());
+        order.setDiscountCode(cartDto.getAppliedDiscountCode());
+        order.setAppliedDiscount(cartDto.getDiscountPrice());
 
         // Convert cart items to order items and attach to the order
         List<OrderItem> orderItems = cartDto.getCartItemDtoList().stream()

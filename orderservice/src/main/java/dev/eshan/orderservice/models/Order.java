@@ -31,6 +31,9 @@ public class Order extends BaseModel {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     List<OrderItem> orderItemList = new ArrayList<>();
 
+    String discountCode;
+    Double appliedDiscount;
+
     @OneToOne(cascade = CascadeType.ALL)
     Payment payment;
 
