@@ -34,22 +34,33 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Order not found with ID: " + orderId));
 
+        // Check if the transaction is already processed
+        if (order.getPayment() != null && order.getPayment().getPaymentStatus() == PaymentStatus.SUCCESS) {
+            throw new IllegalStateException("Payment already processed for order: " + orderId);
+        }
+
         // Step 2: Set the order status to PENDING
         order.setOrderStatus(OrderStatus.PENDING);
 
-        // Step 3: Create a payment record with PENDING status
+        // Check if the transactionId is already present in the database
+        if (order.getPayment() != null && order.getPayment().getTransactionId() != null) {
+            throw new IllegalStateException("Payment already initiated for order: " + orderId);
+        }
+
+        // Step 3: Generate the payment redirect URL from the payment gateway
+        PaymentRedirectResponse redirectResponse = paymentGateway.generatePaymentRedirectURL(orderId, order.getTotalAmount());
+
+        // Step 4: Create a payment record with PENDING status
         Payment payment = new Payment();
         payment.setPaymentGateway("MockGateway");
         payment.setAmount(order.getTotalAmount());
         payment.setPaymentStatus(PaymentStatus.PENDING);  // Initial state before payment is confirmed
+        payment.setTransactionId(redirectResponse.getTransactionId());
         payment = paymentRepository.save(payment);
 
         // Attach the payment to the order
         order.setPayment(payment);
         orderRepository.save(order);
-
-        // Step 4: Generate the payment redirect URL from the payment gateway
-        PaymentRedirectResponse redirectResponse = paymentGateway.generatePaymentRedirectURL(orderId, order.getTotalAmount());
 
         // Step 5: Return the payment response DTO with the redirect URL
         PaymentResponseDto responseDto = new PaymentResponseDto();
@@ -85,7 +96,7 @@ public class PaymentServiceImpl implements PaymentService {
             paymentRepository.save(payment);
             orderRepository.save(order);
 
-            return new PaymentConfirmationResponse(order.getId(), "SUCCESS", "Order completed successfully.");
+            return new PaymentConfirmationResponse(order.getId(), OrderStatus.COMPLETED.name(), "Order completed successfully.");
         } else {
             // Step 4: Update payment and order status to FAILED if payment verification failed
             payment.setPaymentStatus(PaymentStatus.FAILED);

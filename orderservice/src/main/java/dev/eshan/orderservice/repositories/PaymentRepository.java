@@ -30,4 +30,6 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
                                          @Param("startDate") LocalDateTime startDate,
                                          @Param("endDate") LocalDateTime endDate);
 
+    boolean existsByTransactionId(String transactionId);
+
 }

@@ -52,8 +52,6 @@ public class CheckoutServiceImpl implements CheckoutService {
                 return "Your order has been created and is awaiting payment.";
             case PENDING:
                 return "Your order is pending. Please complete the payment.";
-            case PROCESSING:
-                return "Your order is being processed.";
             case COMPLETED:
                 return "Your order has been completed and is on its way.";
             case CANCELED:

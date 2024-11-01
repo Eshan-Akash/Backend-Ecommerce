@@ -6,6 +6,7 @@ import dev.eshan.orderservice.exceptions.NotFoundException;
 public interface PaymentService {
 
     PaymentResponseDto processPayment(String orderId) throws NotFoundException;
+
     PaymentConfirmationResponse confirmPayment(String orderId) throws NotFoundException;
 
     PaymentStatusDto getPaymentStatus(String paymentId) throws NotFoundException;

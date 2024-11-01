@@ -3,7 +3,6 @@ package dev.eshan.orderservice.models;
 public enum OrderStatus {
     INIT,
     PENDING,       // Order is placed but not yet processed
-    PROCESSING,    // Order is being processed
     SHIPPED,       // Order has been shipped to the customer
     DELIVERED,     // Order has been delivered to the customer
     COMPLETED,     // Order has been fully completed
