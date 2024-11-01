@@ -27,7 +27,7 @@ public class AnalyticsController {
 
     @GetMapping("/payments")
     public PaymentReportDto getPaymentAnalytics(@RequestParam(required = false) String startDate,
-                                                                @RequestParam(required = false) String endDate) {
+                                                @RequestParam(required = false) String endDate) {
         return analyticsService.getPaymentAnalytics(startDate, endDate);
     }
 

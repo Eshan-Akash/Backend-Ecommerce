@@ -1,13 +1,13 @@
 package dev.eshan.orderservice.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
 public class PaymentReportDto {
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private int totalPayments;
-    private double totalAmountProcessed;
-    private int failedPayments;
+    private long totalPayments;
+    private double totalAmount;
+    private long successfulPayments;
+    private double totalSuccessfulAmount;
 }

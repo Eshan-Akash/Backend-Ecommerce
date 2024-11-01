@@ -1,9 +1,7 @@
 package dev.eshan.orderservice.controllers;
 
-import dev.eshan.orderservice.dtos.PaymentRequestDto;
-import dev.eshan.orderservice.dtos.PaymentResponseDto;
-import dev.eshan.orderservice.dtos.PaymentStatusDto;
-import dev.eshan.orderservice.dtos.RetryPaymentDto;
+import dev.eshan.orderservice.dtos.*;
+import dev.eshan.orderservice.exceptions.NotFoundException;
 import dev.eshan.orderservice.services.interfaces.PaymentService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,17 +16,22 @@ public class PaymentController {
     }
 
     @PostMapping("/process")
-    public PaymentResponseDto processPayment(@RequestBody PaymentRequestDto paymentRequest) {
-        return paymentService.processPayment(paymentRequest);
+    public PaymentResponseDto processPayment(@RequestParam String orderId) throws NotFoundException {
+        return paymentService.processPayment(orderId);
+    }
+
+    @PostMapping("/confirm")
+    public PaymentConfirmationResponse confirmPayment(@RequestParam String orderId) throws NotFoundException {
+        return paymentService.confirmPayment(orderId);
     }
 
     @GetMapping("/status/{paymentId}")
-    public PaymentStatusDto getPaymentStatus(@PathVariable String paymentId) {
+    public PaymentStatusDto getPaymentStatus(@PathVariable String paymentId) throws NotFoundException {
         return paymentService.getPaymentStatus(paymentId);
     }
 
     @PostMapping("/retry")
-    public PaymentResponseDto retryPayment(@RequestBody RetryPaymentDto retryPayment) {
+    public PaymentResponseDto retryPayment(@RequestBody RetryPaymentDto retryPayment) throws NotFoundException {
         return paymentService.retryPayment(retryPayment);
     }
 }

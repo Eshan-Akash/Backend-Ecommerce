@@ -1,11 +1,11 @@
-package dev.eshan.orderservice.dtos;
+package dev.eshan.orderservice.networks;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class PaymentStatusDto {
+public class PaymentRedirectResponse {
+    private String redirectUrl;
     private String transactionId;
-    private String paymentStatus;
 }

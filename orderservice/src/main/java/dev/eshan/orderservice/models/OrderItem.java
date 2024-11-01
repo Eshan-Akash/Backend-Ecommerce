@@ -1,5 +1,6 @@
 package dev.eshan.orderservice.models;
 
+import dev.eshan.orderservice.dtos.CartItemDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,18 +16,27 @@ import lombok.experimental.FieldDefaults;
 public class OrderItem extends BaseModel {
 
     @Column(nullable = false)
-    String productId;
+    private String productId;
 
     @Column(nullable = false)
-    String productName;
+    private String productName;
 
     @Column(nullable = false)
-    Integer quantity;
+    private int quantity;
 
     @Column(nullable = false)
-    Double price;
+    private double price;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
-    Order order;
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+
+    public static OrderItem of(CartItemDto cartItemDto) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProductId(cartItemDto.getProductId());
+        orderItem.setProductName(cartItemDto.getProductName());
+        orderItem.setQuantity(cartItemDto.getQuantity());
+        orderItem.setPrice(cartItemDto.getPricePerUnit());
+        return orderItem;
+    }
 }

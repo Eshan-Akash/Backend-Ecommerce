@@ -1,9 +1,8 @@
 package dev.eshan.orderservice.controllers;
 
 import dev.eshan.orderservice.dtos.CheckoutRequestDto;
-import dev.eshan.orderservice.dtos.OrderDto;
-import dev.eshan.orderservice.dtos.PaymentRequestDto;
-import dev.eshan.orderservice.dtos.PaymentResponseDto;
+import dev.eshan.orderservice.dtos.CheckoutResponseDto;
+import dev.eshan.orderservice.exceptions.NotFoundException;
 import dev.eshan.orderservice.services.interfaces.CheckoutService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,17 +17,12 @@ public class CheckoutController {
     }
 
     @PostMapping
-    public OrderDto checkout(@RequestBody CheckoutRequestDto checkoutRequest) {
-        return checkoutService.checkout(checkoutRequest);
-    }
-
-    @PostMapping("/payment")
-    public PaymentResponseDto processPayment(@RequestBody PaymentRequestDto paymentRequest) {
-        return checkoutService.processPayment(paymentRequest);
+    public CheckoutResponseDto checkout(@RequestBody CheckoutRequestDto checkoutRequest, @RequestParam String userId) {
+        return checkoutService.checkout(userId, checkoutRequest);
     }
 
     @GetMapping("/status")
-    public String getCheckoutStatus(@RequestParam String orderId) {
+    public String getCheckoutStatus(@RequestParam String orderId) throws NotFoundException {
         return checkoutService.getCheckoutStatus(orderId);
     }
 }

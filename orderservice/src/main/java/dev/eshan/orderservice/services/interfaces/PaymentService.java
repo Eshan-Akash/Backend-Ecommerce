@@ -1,15 +1,15 @@
 package dev.eshan.orderservice.services.interfaces;
 
-import dev.eshan.orderservice.dtos.PaymentRequestDto;
-import dev.eshan.orderservice.dtos.PaymentResponseDto;
-import dev.eshan.orderservice.dtos.PaymentStatusDto;
-import dev.eshan.orderservice.dtos.RetryPaymentDto;
+import dev.eshan.orderservice.dtos.*;
+import dev.eshan.orderservice.exceptions.NotFoundException;
 
 public interface PaymentService {
 
-    PaymentResponseDto processPayment(PaymentRequestDto paymentRequest);
+    PaymentResponseDto processPayment(String orderId) throws NotFoundException;
 
-    PaymentStatusDto getPaymentStatus(String paymentId);
+    PaymentConfirmationResponse confirmPayment(String orderId) throws NotFoundException;
 
-    PaymentResponseDto retryPayment(RetryPaymentDto retryPayment);
+    PaymentStatusDto getPaymentStatus(String paymentId) throws NotFoundException;
+
+    PaymentResponseDto retryPayment(RetryPaymentDto retryPayment) throws NotFoundException;
 }

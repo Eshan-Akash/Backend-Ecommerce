@@ -15,4 +15,6 @@ public interface CartService {
     CartDto applyDiscount(String userId, DiscountCodeDto discountCode);
 
     CartDto viewCart(String userId);
+
+    void clearCart(String userId);
 }

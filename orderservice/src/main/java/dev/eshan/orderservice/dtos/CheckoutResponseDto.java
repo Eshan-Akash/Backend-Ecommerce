@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class PaymentStatusDto {
-    private String transactionId;
-    private String paymentStatus;
+public class CheckoutResponseDto {
+    String url;
 }

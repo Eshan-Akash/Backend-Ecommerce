@@ -19,7 +19,7 @@ public class Order extends BaseModel {
 
 
     @Column(nullable = false)
-    String customerId;
+    String userId;
 
     @Column(nullable = false)
     Double totalAmount;
@@ -29,18 +29,24 @@ public class Order extends BaseModel {
     OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<OrderItem> orderItems = new ArrayList<>();
+    List<OrderItem> orderItemList = new ArrayList<>();
+
+    String discountCode;
+    Double appliedDiscount;
 
     @OneToOne(cascade = CascadeType.ALL)
     Payment payment;
 
+    @Column(nullable = false)
+    String shippingAddress;
+
     public void addOrderItem(OrderItem orderItem) {
-        orderItems.add(orderItem);
+        orderItemList.add(orderItem);
         orderItem.setOrder(this);
     }
 
     public void calculateTotalAmount() {
-        totalAmount = orderItems.stream()
+        totalAmount = orderItemList.stream()
                 .mapToDouble(item -> item.getPrice() * item.getQuantity())
                 .sum();
     }
