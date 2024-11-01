@@ -62,12 +62,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         }
 
         // Calculate analytics (e.g., total payments, successful payments, etc.)
+        long totalPayment = payments.size();
         double totalAmount = payments.stream().mapToDouble(Payment::getAmount).sum();
+        double totalSuccessfulAmount = payments.stream()
+                .filter(payment -> payment.getPaymentStatus() == PaymentStatus.SUCCESS)
+                .mapToDouble(Payment::getAmount)
+                .sum();
         long successfulPayments = payments.stream()
                 .filter(payment -> payment.getPaymentStatus() == PaymentStatus.SUCCESS)
                 .count();
 
-        return new PaymentReportDto(totalAmount, successfulPayments);
+        return new PaymentReportDto(totalPayment, totalAmount, successfulPayments, totalSuccessfulAmount);
     }
 
     @Override
