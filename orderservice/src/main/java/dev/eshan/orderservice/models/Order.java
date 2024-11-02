@@ -37,7 +37,6 @@ public class Order extends BaseModel {
     @OneToOne(cascade = CascadeType.ALL)
     Payment payment;
 
-    @Column(nullable = false)
     String shippingAddress;
 
     public void addOrderItem(OrderItem orderItem) {

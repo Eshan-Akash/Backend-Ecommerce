@@ -35,7 +35,7 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         // Redirect to the payment page with the generated order ID
         String paymentUrl = "/api/v1/payment/process?orderId=" + order.getOrderId();
-        return new CheckoutResponseDto(paymentUrl);
+        return new CheckoutResponseDto(paymentUrl, order.getOrderId());
     }
 
     @Override

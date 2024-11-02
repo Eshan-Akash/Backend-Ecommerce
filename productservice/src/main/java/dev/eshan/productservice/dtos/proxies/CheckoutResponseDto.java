@@ -1,4 +1,4 @@
-package dev.eshan.orderservice.dtos;
+package dev.eshan.productservice.dtos.proxies;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

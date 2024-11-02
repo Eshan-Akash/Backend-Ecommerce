@@ -1,0 +1,11 @@
+package dev.eshan.productservice.dtos.proxies;
+
+import lombok.Data;
+
+@Data
+public class OrderItemDto {
+    private String productId;
+    private String productName;
+    private int quantity;
+    private double price;
+}
