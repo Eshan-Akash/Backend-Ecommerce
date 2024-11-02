@@ -22,7 +22,9 @@ public class Order extends BaseModel {
     String userId;
 
     @Column(nullable = false)
-    Double totalAmount;
+    Double finalAmount;
+
+    Double totalAmount = 0.0;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -37,7 +39,6 @@ public class Order extends BaseModel {
     @OneToOne(cascade = CascadeType.ALL)
     Payment payment;
 
-    @Column(nullable = false)
     String shippingAddress;
 
     public void addOrderItem(OrderItem orderItem) {

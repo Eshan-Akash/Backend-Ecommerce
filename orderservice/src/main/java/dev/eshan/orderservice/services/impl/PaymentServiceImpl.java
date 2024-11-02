@@ -48,12 +48,12 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         // Step 3: Generate the payment redirect URL from the payment gateway
-        PaymentRedirectResponse redirectResponse = paymentGateway.generatePaymentRedirectURL(orderId, order.getTotalAmount());
+        PaymentRedirectResponse redirectResponse = paymentGateway.generatePaymentRedirectURL(orderId, order.getFinalAmount());
 
         // Step 4: Create a payment record with PENDING status
         Payment payment = new Payment();
         payment.setPaymentGateway("MockGateway");
-        payment.setAmount(order.getTotalAmount());
+        payment.setAmount(order.getFinalAmount());
         payment.setPaymentStatus(PaymentStatus.PENDING);  // Initial state before payment is confirmed
         payment.setTransactionId(redirectResponse.getTransactionId());
         payment = paymentRepository.save(payment);
@@ -67,7 +67,7 @@ public class PaymentServiceImpl implements PaymentService {
         responseDto.setPaymentId(payment.getId());
         responseDto.setPaymentStatus(PaymentStatus.PENDING);
         responseDto.setTransactionId(redirectResponse.getTransactionId());
-        responseDto.setAmountPaid(order.getTotalAmount());
+        responseDto.setAmountPaid(order.getFinalAmount());
         responseDto.setRedirectUrl(redirectResponse.getRedirectUrl());  // URL to redirect user for payment
 
         return responseDto;
@@ -135,7 +135,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         // Generate a new payment redirect URL for retry
-        PaymentRedirectResponse redirectResponse = paymentGateway.generatePaymentRedirectURL(order.getId(), order.getTotalAmount());
+        PaymentRedirectResponse redirectResponse = paymentGateway.generatePaymentRedirectURL(order.getId(), order.getFinalAmount());
 
         // Update payment record in the database with the new transaction ID and status as PENDING
         Payment payment = order.getPayment();
@@ -150,7 +150,7 @@ public class PaymentServiceImpl implements PaymentService {
         responseDto.setPaymentMethod(payment.getPaymentGateway());
         responseDto.setPaymentStatus(PaymentStatus.PENDING);
         responseDto.setTransactionId(redirectResponse.getTransactionId());
-        responseDto.setAmountPaid(order.getTotalAmount());
+        responseDto.setAmountPaid(order.getFinalAmount());
         responseDto.setRedirectUrl(redirectResponse.getRedirectUrl());  // URL to redirect user for payment
 
         // Return the new payment redirect URL and transaction information

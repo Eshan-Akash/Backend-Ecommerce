@@ -81,6 +81,7 @@ public class CartServiceImpl implements CartService {
         double totalPrice = cart.getCartItems().stream()
                 .mapToDouble(item -> item.getQuantity() * item.getPricePerUnit())
                 .sum();
+        cart.setFinalPrice(totalPrice);
         cart.setTotalPrice(totalPrice);
         cartRepository.save(cart);
     }
@@ -122,6 +123,7 @@ public class CartServiceImpl implements CartService {
         double updatedTotalPrice = cart.getCartItems().stream()
                 .mapToDouble(item -> item.getPricePerUnit() * item.getQuantity())
                 .sum();
+        cart.setFinalPrice(updatedTotalPrice);
         cart.setTotalPrice(updatedTotalPrice);
 
         // reset the applied discount and discount code
@@ -167,6 +169,7 @@ public class CartServiceImpl implements CartService {
         double updatedTotalPrice = cart.getCartItems().stream()
                 .mapToDouble(item -> item.getPricePerUnit() * item.getQuantity())
                 .sum();
+        cart.setFinalPrice(updatedTotalPrice);
         cart.setTotalPrice(updatedTotalPrice);
 
         // Save the updated cart in the repository
@@ -192,7 +195,7 @@ public class CartServiceImpl implements CartService {
         double finalPrice = cart.getTotalPrice() - discountAmount;
 
         // Set the applied discount details in the cart
-        cart.setTotalPrice(finalPrice);
+        cart.setFinalPrice(finalPrice);
         cart.setAppliedDiscount(discountAmount);
         cart.setDiscountCode(discountCodeDto.getCode());
 
@@ -223,9 +226,10 @@ public class CartServiceImpl implements CartService {
             cartItemRepository.deleteAll(cart.getCartItems());
             // Optionally, clear the cart items list and reset totals
             cart.getCartItems().clear();
-            cart.setTotalPrice(0.0);
+            cart.setFinalPrice(0.0);
             cart.setDiscountCode(null);
             cart.setAppliedDiscount(0.0);
+            cart.setFinalPrice(0.0);
             cart.setTotalPrice(0.0);
             cartRepository.save(cart);
         }

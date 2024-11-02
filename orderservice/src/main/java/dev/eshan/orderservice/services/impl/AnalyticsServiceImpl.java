@@ -41,7 +41,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
             orders = orderRepository.findAll();
         }
 
-        double totalRevenue = orders.stream().mapToDouble(Order::getTotalAmount).sum();
+        double totalRevenue = orders.stream().mapToDouble(Order::getFinalAmount).sum();
         int totalOrders = orders.size();
 
         return new OrderReportDto(totalOrders, totalRevenue);
