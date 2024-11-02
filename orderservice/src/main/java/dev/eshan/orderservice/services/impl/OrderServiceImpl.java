@@ -50,7 +50,8 @@ public class OrderServiceImpl implements OrderService {
         // Create a new Order
         Order order = new Order();
         order.setUserId(userId);
-        order.setTotalAmount(cartDto.getFinalPrice());
+        order.setFinalAmount(cartDto.getFinalPrice());
+        order.setTotalAmount(cartDto.getTotalOriginalPrice());
         order.setOrderStatus(OrderStatus.INIT);
         order.setShippingAddress(userDetails.getAddress());
         order.setDiscountCode(cartDto.getAppliedDiscountCode());

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class OrderDto {
     private String orderId;
     private String userId;
-    private double totalAmount;
+    private double finalAmount;
     private List<OrderItemDto> orderItemList;
     private OrderStatus orderStatus;
     private Timestamp createdAt;

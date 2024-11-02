@@ -25,9 +25,12 @@ public class Cart extends BaseModel {
     List<CartItem> cartItems = new ArrayList<>();
 
     @Column(nullable = false)
+    Double finalPrice = 0.0;
+
     Double totalPrice = 0.0;
 
     String discountCode;
+
     Double appliedDiscount;
 
     public void addCartItem(CartItem cartItem) {

@@ -22,7 +22,9 @@ public class Order extends BaseModel {
     String userId;
 
     @Column(nullable = false)
-    Double totalAmount;
+    Double finalAmount;
+
+    Double totalAmount = 0.0;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

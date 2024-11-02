@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 public class OrderDto {
     private String orderId;
     private String userId;
-    private double totalAmount;
+    private double finalAmount;
+    private double totalOriginalAmount;
     private List<OrderItemDto> orderItemList;
     private OrderStatus orderStatus;
     private Timestamp createdAt;
@@ -31,7 +32,8 @@ public class OrderDto {
 
         orderDto.setOrderId(order.getId());
         orderDto.setUserId(order.getUserId());
-        orderDto.setTotalAmount(order.getTotalAmount());
+        orderDto.setFinalAmount(order.getFinalAmount());
+        orderDto.setTotalOriginalAmount(order.getTotalAmount());
 
         orderDto.setOrderItemList(order.getOrderItemList().stream()
                 .map(OrderItemDto::from)
