@@ -1,5 +1,8 @@
 package dev.eshan.userservice.services.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.eshan.userservice.configs.KafkaProducerClient;
+import dev.eshan.userservice.dtos.SendEmailMessageDto;
 import dev.eshan.userservice.dtos.UserDto;
 import dev.eshan.userservice.exceptions.UserAlreadyExistsException;
 import dev.eshan.userservice.models.Session;
@@ -14,16 +17,12 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMapAdapter;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -33,11 +32,16 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final SessionRepository sessionRepository;
+    private final KafkaProducerClient kafkaProducerClient;
+    private final ObjectMapper objectMapper;
 
-    public AuthServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, SessionRepository sessionRepository) {
+    public AuthServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
+                           SessionRepository sessionRepository, KafkaProducerClient kafkaProducerClient, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.sessionRepository = sessionRepository;
+        this.kafkaProducerClient = kafkaProducerClient;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -57,7 +61,33 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         newUser = userRepository.save(newUser);
-        return UserDto.from(newUser);
+        UserDto userDto = UserDto.from(newUser);
+        sendSignUpEmail(userDto);
+        return userDto;
+    }
+
+    private void sendSignUpEmail(UserDto userDto) {
+        try {
+            String subject = "Welcome to ES EcommX - Your Journey Begins!";
+            String body = "Hi [User's First Name],\n\n" +
+                    "Welcome to Your ES EcommX!\n\n" +
+                    "We’re thrilled to have you on board. Your account has been successfully created, and you are now part of a community committed to delivering the most seamless and enjoyable online shopping experience.\n\n" +
+                    "Here’s what you can do next:\n" +
+                    "- Explore our products/services: Check out what we have to offer and find what you need.\n" +
+                    "- Complete your profile: Personalize your account to get a more tailored experience.\n" +
+                    "- Stay updated: Be the first to know about our latest features, updates, and exclusive offers.\n\n" +
+                    "If you have any questions or need assistance, our support team is here to help!\n\n" +
+                    "Enjoy your experience with us,\n" +
+                    "The ES EcommX Team\n\n";
+
+            SendEmailMessageDto sendEmailMessageDto = new SendEmailMessageDto();
+            sendEmailMessageDto.setTo(userDto.getEmail());
+            sendEmailMessageDto.setSubject(subject);
+            sendEmailMessageDto.setBody(body);
+            kafkaProducerClient.sendMessage("sendEmail", objectMapper.writeValueAsString(sendEmailMessageDto));
+        } catch (Exception e) {
+            log.error("Error while sending email: {}", e.getMessage());
+        }
     }
 
     @Override
