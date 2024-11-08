@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import static dev.eshan.productservice.utils.Utils.APPLICATION_JSON;
 
@@ -21,6 +22,8 @@ import static dev.eshan.productservice.utils.Utils.APPLICATION_JSON;
 public class CheckoutServiceProxyImpl {
     @Value("${order.service.base.url}")
     private String orderServiceBaseUrl;
+    @Value("${order.service.token}")
+    private String orderServiceToken;
 
     private final OkHttpClientService okHttpClientService;
 
@@ -33,7 +36,8 @@ public class CheckoutServiceProxyImpl {
         CheckoutResponseDto checkoutResponse = null;
         try {
             String checkoutUrl = orderServiceBaseUrl + "/api/v1/checkout?userId=" + userId;
-            String response = okHttpClientService.postCall(checkoutUrl, RequestBody.create(MediaType.parse(APPLICATION_JSON), Utils.gson.toJson(checkoutRequest)), new HashMap<>());
+            String response = okHttpClientService.postCall(checkoutUrl, RequestBody.create(MediaType.parse(APPLICATION_JSON),
+                    Utils.gson.toJson(checkoutRequest)), getOrderServiceRequestHeaders());
             checkoutResponse = Utils.gson.fromJson(response, CheckoutResponseDto.class);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error in creating order, please try again later.");
@@ -43,7 +47,8 @@ public class CheckoutServiceProxyImpl {
         PaymentResponseDto paymentResponse = null;
         try {
             String paymentUrl = orderServiceBaseUrl + "/api/v1/payment/process?orderId=" + checkoutResponse.getOrderId();
-            String response = okHttpClientService.postCall(paymentUrl, RequestBody.create(MediaType.parse(APPLICATION_JSON), ""), new HashMap<>());
+            String response = okHttpClientService.postCall(paymentUrl, RequestBody.create(MediaType.parse(APPLICATION_JSON), ""),
+                    getOrderServiceRequestHeaders());
             paymentResponse = Utils.gson.fromJson(response, PaymentResponseDto.class);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error in processing payment, please try again later.");
@@ -54,6 +59,12 @@ public class CheckoutServiceProxyImpl {
 
     public String getCheckoutStatus(String orderId, String userId) throws IOException {
         String statusUrl = orderServiceBaseUrl + "/api/v1/checkout/status?orderId=" + orderId + "&userId=" + userId;
-        return okHttpClientService.getCall(statusUrl, "",new HashMap<>());
+        return okHttpClientService.getCall(statusUrl, "", getOrderServiceRequestHeaders());
+    }
+
+    public Map<String, String> getOrderServiceRequestHeaders() {
+        return Map.ofEntries(
+                Map.entry("Content-Type", APPLICATION_JSON),
+                Map.entry("Authorization", "Bearer " + orderServiceToken));
     }
 }

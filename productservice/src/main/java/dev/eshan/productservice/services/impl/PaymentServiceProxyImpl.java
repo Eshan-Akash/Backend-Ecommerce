@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import static dev.eshan.productservice.utils.Utils.APPLICATION_JSON;
 
@@ -21,6 +22,10 @@ import static dev.eshan.productservice.utils.Utils.APPLICATION_JSON;
 public class PaymentServiceProxyImpl {
     @Value("${order.service.base.url}")
     private String orderServiceBaseUrl;
+
+    @Value("${order.service.token}")
+    private String orderServiceToken;
+
     private final OkHttpClientService okHttpClientService;
 
     public PaymentServiceProxyImpl(OkHttpClientService okHttpClientService) {
@@ -31,20 +36,26 @@ public class PaymentServiceProxyImpl {
         // URL to confirm payment
         String confirmPaymentUrl = orderServiceBaseUrl + "/api/v1/payment/confirm?orderId=" + orderId + "&userId=" + userId;
         String response = okHttpClientService.postCall(confirmPaymentUrl,
-                RequestBody.create(MediaType.parse(APPLICATION_JSON), ""), new HashMap<>());
+                RequestBody.create(MediaType.parse(APPLICATION_JSON), ""), getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, PaymentConfirmationResponse.class);
     }
 
     public PaymentStatusDto getPaymentStatus(String paymentId, String userId) throws IOException {
         String paymentStatusUrl = orderServiceBaseUrl + "/api/v1/payment/status/" + paymentId + "?userId=" + userId;
-        String response = okHttpClientService.getCall(paymentStatusUrl, "", new HashMap<>());
+        String response = okHttpClientService.getCall(paymentStatusUrl, "", getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, PaymentStatusDto.class);
     }
 
     public PaymentResponseDto retryPayment(RetryPaymentDto retryPayment, String userId) throws IOException {
         String retryPaymentUrl = orderServiceBaseUrl + "/api/v1/payment/retry" + "?userId=" + userId;
         String response = okHttpClientService.postCall(retryPaymentUrl,
-                RequestBody.create(MediaType.parse(APPLICATION_JSON), Utils.gson.toJson(retryPayment)), new HashMap<>());
+                RequestBody.create(MediaType.parse(APPLICATION_JSON), Utils.gson.toJson(retryPayment)), getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, PaymentResponseDto.class);
+    }
+
+    public Map<String, String> getOrderServiceRequestHeaders() {
+        return Map.ofEntries(
+                Map.entry("Content-Type", APPLICATION_JSON),
+                Map.entry("Authorization", "Bearer " + orderServiceToken));
     }
 }
