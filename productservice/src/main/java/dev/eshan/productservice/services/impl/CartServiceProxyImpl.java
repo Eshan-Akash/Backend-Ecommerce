@@ -9,10 +9,11 @@ import dev.eshan.productservice.services.commons.OkHttpClientService;
 import dev.eshan.productservice.utils.Utils;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 
 import static dev.eshan.productservice.utils.Utils.APPLICATION_JSON;
 
@@ -21,6 +22,8 @@ public class CartServiceProxyImpl {
     private final OkHttpClientService okHttpClientService;
     private final ProductRepository productRepository;
     private final String orderServiceBaseUrl = "http://localhost:9000";
+    @Value("${order.service.token}")
+    private String orderServiceToken;
 
     public CartServiceProxyImpl(OkHttpClientService okHttpClientService, ProductRepository productRepository) {
         this.okHttpClientService = okHttpClientService;
@@ -35,7 +38,7 @@ public class CartServiceProxyImpl {
 
         String url = orderServiceBaseUrl + "/api/v1/cart/add?userId=" + userId;
         RequestBody requestBody = RequestBody.create(MediaType.parse(APPLICATION_JSON), Utils.gson.toJson(cartItem));
-        String response = okHttpClientService.postCall(url, requestBody, new HashMap<>());
+        String response = okHttpClientService.postCall(url, requestBody, getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, CartDto.class);
     }
 
@@ -47,25 +50,31 @@ public class CartServiceProxyImpl {
 
         String url = orderServiceBaseUrl + "/api/v1/cart/update?userId=" + userId;
         RequestBody requestBody = RequestBody.create(MediaType.parse(APPLICATION_JSON), Utils.gson.toJson(cartItem));
-        String response = okHttpClientService.putCall(url, requestBody, new HashMap<>());
+        String response = okHttpClientService.putCall(url, requestBody, getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, CartDto.class);
     }
 
     public void removeCartItem(String userId, String itemId) throws IOException {
         String url = orderServiceBaseUrl + "/api/v1/cart/remove/" + itemId + "?userId=" + userId;
-        okHttpClientService.deleteCall(url, "",new HashMap<>());
+        okHttpClientService.deleteCall(url, "", getOrderServiceRequestHeaders());
     }
 
     public CartDto applyDiscount(String userId, DiscountCodeDto discountCode) throws IOException {
         String url =  orderServiceBaseUrl + "/api/v1/cart/apply-discount?userId=" + userId;
         String response = okHttpClientService.postCall(url, RequestBody.create(MediaType.parse(APPLICATION_JSON),
-                Utils.gson.toJson(discountCode)), new HashMap<>());
+                Utils.gson.toJson(discountCode)), getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, CartDto.class);
     }
 
     public CartDto viewCart(String userId) throws IOException {
         String url = orderServiceBaseUrl + "/api/v1/cart/view?userId=" + userId;
-        String response = okHttpClientService.getCall(url, "", new HashMap<>());
+        String response = okHttpClientService.getCall(url, "", getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, CartDto.class);
+    }
+
+    public Map<String, String> getOrderServiceRequestHeaders() {
+        return Map.ofEntries(
+                Map.entry("Content-Type", APPLICATION_JSON),
+                Map.entry("Authorization", "Bearer " + orderServiceToken));
     }
 }

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static dev.eshan.productservice.utils.Utils.APPLICATION_JSON;
 
@@ -25,6 +26,9 @@ public class OrderServiceProxyImpl {
     @Value("${order.service.base.url}")
     private String orderServiceBaseUrl;
 
+    @Value("${order.service.token}")
+    private String orderServiceToken;
+
     public OrderServiceProxyImpl(OkHttpClientService okHttpClientService) {
         this.okHttpClientService = okHttpClientService;
     }
@@ -33,19 +37,19 @@ public class OrderServiceProxyImpl {
         String url = orderServiceBaseUrl + "/api/v1/order/create?userId=" + userId;
         String response = okHttpClientService.postCall(url,
                 RequestBody.create(Utils.gson.toJson(userDetails), MediaType.get("application/json; charset=utf-8")
-                ), new HashMap<>());
+                ), getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, OrderDto.class);
     }
 
     public OrderDto getOrderById(String orderId, String userId) throws IOException {
         String url = orderServiceBaseUrl + "/api/v1/order" + orderId + "?userId=" + userId;
-        String response = okHttpClientService.getCall(url, "", new HashMap<>());
+        String response = okHttpClientService.getCall(url, "", getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, OrderDto.class);
     }
 
     public List<OrderDto> getOrderHistory(String userId) throws IOException {
         String url = orderServiceBaseUrl + "/api/v1/order/history?userId=" + userId;
-        String response = okHttpClientService.getCall(url, "", new HashMap<>());
+        String response = okHttpClientService.getCall(url, "", getOrderServiceRequestHeaders());
         return Utils.gsonSnakeCase.fromJson(response,
                 new TypeToken<ArrayList<OrderDto>>() {
                 }.getType());
@@ -53,7 +57,13 @@ public class OrderServiceProxyImpl {
 
     public TrackingStatusDto trackOrder(String orderId, String userId) throws IOException {
         String url = orderServiceBaseUrl + "/api/v1/order/track/" + orderId + "?userId=" + userId;
-        String response = okHttpClientService.getCall(url, "", new HashMap<>());
+        String response = okHttpClientService.getCall(url, "", getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, TrackingStatusDto.class);
+    }
+
+    public Map<String, String> getOrderServiceRequestHeaders() {
+        return Map.ofEntries(
+                Map.entry("Content-Type", APPLICATION_JSON),
+                Map.entry("Authorization", "Bearer " + orderServiceToken));
     }
 }

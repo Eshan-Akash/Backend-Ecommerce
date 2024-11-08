@@ -4,6 +4,7 @@ import com.nimbusds.jose.shaded.gson.FieldNamingPolicy;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.io.IOException;
