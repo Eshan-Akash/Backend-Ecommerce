@@ -1,10 +1,6 @@
 package dev.eshan.productservice.services.impl;
 
-import dev.eshan.productservice.dtos.proxies.PaymentConfirmationResponse;
-import dev.eshan.productservice.dtos.proxies.PaymentResponseDto;
-import dev.eshan.productservice.dtos.proxies.PaymentStatusDto;
-import dev.eshan.productservice.dtos.proxies.RetryPaymentDto;
-import dev.eshan.productservice.exceptions.NotFoundException;
+import dev.eshan.productservice.dtos.proxies.*;
 import dev.eshan.productservice.services.commons.OkHttpClientService;
 import dev.eshan.productservice.utils.Utils;
 import okhttp3.MediaType;
@@ -13,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import static dev.eshan.productservice.utils.Utils.APPLICATION_JSON;
@@ -32,11 +27,11 @@ public class PaymentServiceProxyImpl {
         this.okHttpClientService = okHttpClientService;
     }
 
-    public PaymentConfirmationResponse confirmPayment(String orderId, String userId) throws IOException {
+    public PaymentConfirmationResponse confirmPayment(String orderId, String userId, UserDetails userDetails) throws IOException {
         // URL to confirm payment
         String confirmPaymentUrl = orderServiceBaseUrl + "/api/v1/payment/confirm?orderId=" + orderId + "&userId=" + userId;
         String response = okHttpClientService.postCall(confirmPaymentUrl,
-                RequestBody.create(MediaType.parse(APPLICATION_JSON), ""), getOrderServiceRequestHeaders());
+                RequestBody.create(MediaType.parse(APPLICATION_JSON), Utils.gson.toJson(userDetails)), getOrderServiceRequestHeaders());
         return Utils.gson.fromJson(response, PaymentConfirmationResponse.class);
     }
 

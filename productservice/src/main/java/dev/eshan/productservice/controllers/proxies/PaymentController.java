@@ -1,10 +1,6 @@
 package dev.eshan.productservice.controllers.proxies;
 
-import dev.eshan.productservice.dtos.proxies.PaymentConfirmationResponse;
-import dev.eshan.productservice.dtos.proxies.PaymentResponseDto;
-import dev.eshan.productservice.dtos.proxies.PaymentStatusDto;
-import dev.eshan.productservice.dtos.proxies.RetryPaymentDto;
-import dev.eshan.productservice.exceptions.NotFoundException;
+import dev.eshan.productservice.dtos.proxies.*;
 import dev.eshan.productservice.services.impl.PaymentServiceProxyImpl;
 import dev.eshan.productservice.utils.UserData;
 import dev.eshan.productservice.utils.Utils;
@@ -28,7 +24,8 @@ public class PaymentController {
     public PaymentConfirmationResponse confirmPayment(@RequestParam String orderId) throws IOException {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserData userData = Utils.createUserDataFromToken(jwt);
-        return paymentServiceProxyImpl.confirmPayment(orderId, userData.getUserId());
+        UserDetails userDetails = UserDetails.builder().email(userData.getEmail()).build();
+        return paymentServiceProxyImpl.confirmPayment(orderId, userData.getUserId(), userDetails);
     }
 
     @GetMapping("/status/{paymentId}")

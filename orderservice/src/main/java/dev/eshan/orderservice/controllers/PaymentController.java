@@ -21,8 +21,8 @@ public class PaymentController {
     }
 
     @PostMapping("/confirm")
-    public PaymentConfirmationResponse confirmPayment(@RequestParam String orderId) throws NotFoundException {
-        return paymentService.confirmPayment(orderId);
+    public PaymentConfirmationResponse confirmPayment(@RequestParam String orderId, @RequestBody UserDetails userDetails) throws NotFoundException {
+        return paymentService.confirmPayment(orderId, userDetails);
     }
 
     @GetMapping("/status/{paymentId}")
