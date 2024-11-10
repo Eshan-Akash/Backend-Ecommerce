@@ -12,27 +12,24 @@ This project is a comprehensive eCommerce platform developed as part of a master
 - **Reviews and Ratings**: Allows users to leave reviews and ratings on products, with moderation features.
 
 ### 2. UserService
-- **User Management**: Handles user registration, login, profile management, and secure password resets.
-- **Security**: Implements role-based access control, two-factor authentication, and social media logins.
+- **User Management**: Handles user registration, login, and profile management.
+- **Security**: Implements role-based access control.
 
 ### 3. OrderService
 - **Cart Management**: Enables users to add, update, and remove items from their shopping cart, including applying discounts and promo codes.
 - **Checkout**: Facilitates a seamless checkout process, including payment processing and order creation.
 - **Order Management**: Provides order confirmation, tracking, and history management.
-- **Payment Integration**: Supports multiple payment gateways, handles payment validation, and manages transaction failures.
+- **Payment Integration**: Supports multiple payment gateways, handles payment validation, and manages transaction failures(A dummy gateway is used for v1 version).
 - **Analytics**: Offers insights and reports on orders and payment transactions.
 
 ### 4. EmailService
-- **Automated Notifications**: Sends emails for various triggers, including order confirmations and shipment updates.
-- **Email Templates**: Customizes and manages templates for different types of email notifications.
+- **Automated Notifications**: Sends emails for various triggers, including order confirmations and User Sign up.
 
 ## Technology Stack
 - **Backend**: Spring Boot, Spring Security, Spring Data JPA
 - **Database**: MySQL (or any preferred relational database)
 - **APIs**: RESTful APIs for service communication
 - **Security**: OAuth, JWT, HTTPS
-- **Deployment**: Docker, Jenkins, AWS
-- **Monitoring**: Prometheus, Grafana
 
 ## Setup Instructions
 1. **Clone the repository**:
