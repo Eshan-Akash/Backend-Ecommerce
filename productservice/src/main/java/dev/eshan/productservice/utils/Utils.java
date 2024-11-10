@@ -14,6 +14,7 @@ import java.util.Map;
 @Slf4j
 public class Utils {
     public static final String APPLICATION_JSON = "application/json";
+    public static final String ERROR_MESSAGE = "Something went wrong.";
     public static final Gson gson = new GsonBuilder().create();
     public static final Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
     public static final Gson gsonSnakeCase = new GsonBuilder()
