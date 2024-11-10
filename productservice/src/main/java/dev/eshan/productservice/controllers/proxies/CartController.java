@@ -6,6 +6,7 @@ import dev.eshan.productservice.dtos.proxies.DiscountCodeDto;
 import dev.eshan.productservice.services.impl.CartServiceProxyImpl;
 import dev.eshan.productservice.utils.UserData;
 import dev.eshan.productservice.utils.Utils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -16,6 +17,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/cart")
+@Slf4j
 public class CartController {
 
     private final CartServiceProxyImpl cartServiceProxyImpl;
@@ -26,51 +28,76 @@ public class CartController {
 
     @PostMapping("/add")
     public CartDto addToCart(@RequestBody CartItemDto cartItem) throws IOException {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserData userData = Utils.createUserDataFromToken(jwt);
-        if (!userData.getUserRole().contains("CUSTOMER")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        try {
+            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserData userData = Utils.createUserDataFromToken(jwt);
+            if (!userData.getUserRole().contains("CUSTOMER")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+            }
+            return cartServiceProxyImpl.addToCart(userData.getUserId(), cartItem);
+        } catch (Exception e) {
+            log.error("Error adding item to cart: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error adding item to cart");
         }
-        return cartServiceProxyImpl.addToCart(userData.getUserId(), cartItem);
     }
 
     @PutMapping("/update")
     public CartDto updateCartItem(@RequestBody CartItemDto cartItem) throws IOException {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserData userData = Utils.createUserDataFromToken(jwt);
-        if (!userData.getUserRole().contains("CUSTOMER")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        try {
+            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserData userData = Utils.createUserDataFromToken(jwt);
+            if (!userData.getUserRole().contains("CUSTOMER")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+            }
+            return cartServiceProxyImpl.updateCartItem(userData.getUserId(), cartItem);
+        } catch (Exception e) {
+            log.error("Error updating item in cart: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating item in cart");
         }
-        return cartServiceProxyImpl.updateCartItem(userData.getUserId(), cartItem);
     }
 
     @DeleteMapping("/remove/{itemId}")
     public void removeCartItem(@PathVariable String itemId) throws IOException {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserData userData = Utils.createUserDataFromToken(jwt);
-        if (!userData.getUserRole().contains("CUSTOMER")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        try {
+            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserData userData = Utils.createUserDataFromToken(jwt);
+            if (!userData.getUserRole().contains("CUSTOMER")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+            }
+            cartServiceProxyImpl.removeCartItem(userData.getUserId(), itemId);
+        } catch (Exception e) {
+            log.error("Error removing item from cart: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error removing item from cart");
         }
-        cartServiceProxyImpl.removeCartItem(userData.getUserId(), itemId);
     }
 
     @PostMapping("/apply-discount")
     public CartDto applyDiscount(@RequestBody DiscountCodeDto discountCode) throws IOException {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserData userData = Utils.createUserDataFromToken(jwt);
-        if (!userData.getUserRole().contains("CUSTOMER")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        try {
+            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserData userData = Utils.createUserDataFromToken(jwt);
+            if (!userData.getUserRole().contains("CUSTOMER")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+            }
+            return cartServiceProxyImpl.applyDiscount(userData.getUserId(), discountCode);
+        } catch (Exception e) {
+            log.error("Error applying discount: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error applying discount");
         }
-        return cartServiceProxyImpl.applyDiscount(userData.getUserId(), discountCode);
     }
 
     @GetMapping("/view")
     public CartDto viewCart() throws IOException {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserData userData = Utils.createUserDataFromToken(jwt);
-        if (!userData.getUserRole().contains("CUSTOMER")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        try {
+            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserData userData = Utils.createUserDataFromToken(jwt);
+            if (!userData.getUserRole().contains("CUSTOMER")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+            }
+            return cartServiceProxyImpl.viewCart(userData.getUserId());
+        } catch (Exception e) {
+            log.error("Error viewing cart: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error viewing cart");
         }
-        return cartServiceProxyImpl.viewCart(userData.getUserId());
     }
 }
