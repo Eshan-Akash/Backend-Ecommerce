@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
         @UniqueConstraint(columnNames = {"productId", "userId"})
 })
 public class Review extends BaseModel {
-    @Column(nullable = false)
+    @Column(columnDefinition = "varchar(64)", nullable = false)
     private String productId;
 
     @Column(nullable = false)

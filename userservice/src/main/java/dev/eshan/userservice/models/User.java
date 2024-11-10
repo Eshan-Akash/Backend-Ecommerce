@@ -18,14 +18,16 @@ import java.util.Set;
 @Data
 @JsonDeserialize(as = User.class)
 public class User extends BaseModel {
-    @Column(nullable = false, unique = true)
+    @Column(columnDefinition = "varchar(100)", nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String password;
-
+    @Column(columnDefinition = "varchar(50)")
     private String firstName;
+    @Column(columnDefinition = "varchar(50)")
     private String lastName;
+    @Column(columnDefinition = "varchar(15)")
     private String phoneNumber;
     private String address;
     private String profileImageUrl;
@@ -36,7 +38,4 @@ public class User extends BaseModel {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     @JsonIgnore
     private Set<Role> roles = new HashSet<>();
-
-    // If you are using two-factor authentication
-    private Boolean twoFactorEnabled = false;
 }

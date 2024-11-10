@@ -51,8 +51,4 @@ public class Order extends BaseModel {
                 .mapToDouble(item -> item.getPrice() * item.getQuantity())
                 .sum();
     }
-
-    public void updateStatus(OrderStatus newStatus) {
-        this.orderStatus = newStatus;
-    }
 }

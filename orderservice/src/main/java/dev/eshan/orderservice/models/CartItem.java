@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class CartItem extends BaseModel {
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "varchar(64)", nullable = false)
     String productId;
 
     @Column(nullable = false)

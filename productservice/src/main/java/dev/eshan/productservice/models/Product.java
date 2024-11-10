@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @NoArgsConstructor
 public class Product extends BaseModel {
+    @Column(columnDefinition = "varchar(100)")
     String title;
     String description;
     String specifications;

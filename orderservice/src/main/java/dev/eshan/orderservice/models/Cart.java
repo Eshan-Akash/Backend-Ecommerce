@@ -18,7 +18,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Cart extends BaseModel {
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "varchar(64)", nullable = false)
     String userId;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
@@ -29,6 +29,7 @@ public class Cart extends BaseModel {
 
     Double totalPrice = 0.0;
 
+    @Column(columnDefinition = "varchar(20)")
     String discountCode;
 
     Double appliedDiscount;
