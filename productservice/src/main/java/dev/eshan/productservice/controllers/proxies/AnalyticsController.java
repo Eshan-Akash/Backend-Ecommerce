@@ -6,6 +6,7 @@ import dev.eshan.productservice.dtos.proxies.PaymentReportDto;
 import dev.eshan.productservice.services.impl.AnalyticsServiceProxyImpl;
 import dev.eshan.productservice.utils.UserData;
 import dev.eshan.productservice.utils.Utils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -19,6 +20,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/analytics")
+@Slf4j
 public class AnalyticsController {
 
     private final AnalyticsServiceProxyImpl analyticsServiceProxyImpl;
@@ -31,32 +33,57 @@ public class AnalyticsController {
     @GetMapping("/orders")
     public OrderReportDto getOrderAnalytics(@RequestParam(required = true) String startDate,
                                             @RequestParam(required = true) String endDate) throws IOException {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserData userData = Utils.createUserDataFromToken(jwt);
-        if (!userData.getUserRole().contains("ADMIN")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        try {
+            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserData userData = Utils.createUserDataFromToken(jwt);
+            if (!userData.getUserRole().contains("ADMIN")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+            }
+            return analyticsServiceProxyImpl.getOrderAnalytics(startDate, endDate);
+        } catch (Exception e) {
+            log.error("Error occurred while fetching order analytics", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred while fetching order analytics");
         }
-        return analyticsServiceProxyImpl.getOrderAnalytics(startDate, endDate);
     }
 
+    /***
+     *
+     * @param startDate format: yyyy-MM-dd
+     * @param endDate format: yyyy-MM-dd
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/payments")
     public PaymentReportDto getPaymentAnalytics(@RequestParam(required = false) String startDate,
                                                 @RequestParam(required = false) String endDate) throws IOException {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserData userData = Utils.createUserDataFromToken(jwt);
-        if (!userData.getUserRole().contains("ADMIN")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        try {
+            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserData userData = Utils.createUserDataFromToken(jwt);
+            if (!userData.getUserRole().contains("ADMIN")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+            }
+            return analyticsServiceProxyImpl.getPaymentAnalytics(startDate, endDate);
+        } catch (Exception e) {
+            log.error("Error occurred while fetching payment analytics", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred while fetching payment analytics");
         }
-        return analyticsServiceProxyImpl.getPaymentAnalytics(startDate, endDate);
     }
 
     @GetMapping("/order-stats")
     public OrderStatsDto getOrderStats() throws IOException {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserData userData = Utils.createUserDataFromToken(jwt);
-        if (!userData.getUserRole().contains("ADMIN")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        try {
+            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserData userData = Utils.createUserDataFromToken(jwt);
+            if (!userData.getUserRole().contains("ADMIN")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+            }
+            return analyticsServiceProxyImpl.getOrderStats();
+        } catch (Exception e) {
+            log.error("Error occurred while fetching order stats", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred while fetching order stats");
         }
-        return analyticsServiceProxyImpl.getOrderStats();
     }
 }

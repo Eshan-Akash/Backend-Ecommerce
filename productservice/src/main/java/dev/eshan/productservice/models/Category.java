@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Category extends BaseModel {
-    @Column
+    @Column(columnDefinition = "varchar(100)")
     private String name;
     @OneToMany(mappedBy = "category")
     @Fetch(FetchMode.SUBSELECT)
